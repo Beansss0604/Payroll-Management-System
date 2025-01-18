@@ -7,5 +7,3 @@
        MAIN.
             DISPLAY "PAYROLL MANAGEMENT SYSTEM"
             STOP RUN.
-       END PROGRAM MAIN.
-
