@@ -3,30 +3,42 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT USER-FILE 
-           ASSIGN TO "UserAuthentication.dat"
-               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT USER-FILE
+           ASSIGN TO "Record.txt"
+           ORGANIZATION IS INDEXED
+            ACCESS MODE IS RANDOM
+            RECORD KEY IS USER-ID.
+
        DATA DIVISION.
        FILE SECTION.
        FD USER-FILE.
        01 USER-RECORD.
-           05 USER-ID PIC X(30).
-           05 USER-PASSWORD PIC X(30).
+           02 USER-ID PIC X(30).
+           02 USER-PASSWORD PIC X(30).
+           02 EMPLOYEE-NAME PIC X(30).
+           02 EMPLOYEE-DOB PIC X(15).
+           02 EMPLOYEE-GENDER PIC A(10).
+           02 EMPLOYEE-MARITAL-STATUS PIC A(10).
+           02 EMPLOYEE-NATIONALITY PIC A(10).
+           02 EMPLOYEE-EMAIL PIC X(20).
+           02 EMPLOYEE-CONTACT PIC Z(12).
+           02 EMPLOYEE-ADDRESS PIC X(40).
+
        WORKING-STORAGE SECTION.
-       01 WS-USERNAME PIC X(30).
-       01 WS-PASSWORD PIC X(30).
-       01 WS-CHOICE PIC 9.
-       01 WS-EOF PIC X VALUE 'N'.
-       01 WS-EXIST PIC X VALUE 'N'.
-       01 WS-VALID PIC X VALUE 'N'.
+       01 CHOICE PIC 9.
+       01 WS-OPEN PIC X VALUE 'Y'.
+       01 WS-INPUT-PASSWORD PIC X(30).
+
        PROCEDURE DIVISION.
-       MAIN.
+       MAIN-MENU.
+           PERFORM UNTIL CHOICE = 3
            DISPLAY "1 - REGISTER"
            DISPLAY "2 - LOGIN"
-           DISPLAY "CHOOSE AN OPTION: " NO ADVANCING 
-               ACCEPT WS-CHOICE
+           DISPLAY "3 - EXIT"
+           DISPLAY "CHOOSE AN OPTION: " NO ADVANCING
+           ACCEPT CHOICE
 
-           EVALUATE WS-CHOICE
+           EVALUATE CHOICE
                WHEN 1
                    PERFORM USER-REGISTER
                WHEN 2
@@ -34,43 +46,172 @@
                WHEN OTHER
                   DISPLAY "INVALID OPTION"
            END-EVALUATE
+           END-PERFORM.
            STOP RUN.
 
        USER-REGISTER.
-              OPEN OUTPUT USER-FILE
-              DISPLAY "ENTER USERNAME: " NO ADVANCING
-              ACCEPT WS-USERNAME
-              DISPLAY "ENTER PASSWORD: " NO ADVANCING
-              ACCEPT WS-PASSWORD
-              MOVE WS-USERNAME TO USER-ID
-              MOVE WS-PASSWORD TO USER-PASSWORD
-              WRITE USER-RECORD
+       OPEN I-O USER-FILE
+       DISPLAY "ENTER USERNAME: " NO ADVANCING
+       ACCEPT USER-ID
+
+       READ USER-FILE KEY IS USER-ID
+           INVALID KEY
+               PERFORM USER-REGISTER-LOOP
+           NOT INVALID KEY
+               DISPLAY "USERNAME ALREADY EXISTS"
+               END-READ.
+               CLOSE USER-FILE
+               PERFORM USER-REGISTER
+       STOP RUN.
+
+       USER-REGISTER-LOOP.
+            DISPLAY "ENTER PASSWORD: " NO ADVANCING
+            ACCEPT USER-PASSWORD
+            DISPLAY "ENTER EMPLOYEE NAME: " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-NAME
+            DISPLAY "ENTER EMPLOYEE DOB(mm/dd/yy): " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-DOB
+            DISPLAY "ENTER EMPLOYEE GENDER(M/F): " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-GENDER
+            DISPLAY "ENTER EMPLOYEE STATUS(Single, Married, etc): "
+            WITH NO ADVANCING
+            ACCEPT EMPLOYEE-MARITAL-STATUS
+            DISPLAY "ENTER EMPLOYEE NATIONALITY: " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-NATIONALITY
+            DISPLAY "ENTER EMPLOYEE EMAIL: " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-EMAIL
+            DISPLAY "ENTER EMPLOYEE CONTACT: " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-CONTACT
+            DISPLAY "ENTER EMPLOYEE ADDRESS: " WITH NO ADVANCING
+            ACCEPT EMPLOYEE-ADDRESS
+            
+            WRITE USER-RECORD
+              END-WRITE.
               CLOSE USER-FILE
-              DISPLAY "USER REGISTERED SUCCESSFULLY".
-       
+              DISPLAY "USER REGISTERED SUCCESSFULLY"
+           
+           PERFORM MAIN-MENU
+           STOP RUN.
+
        USER-LOGIN.
-                OPEN INPUT USER-FILE
-                DISPLAY "ENTER USERNAME: " NO ADVANCING
-                ACCEPT WS-USERNAME
-                DISPLAY "ENTER PASSWORD: " NO ADVANCING
-                ACCEPT WS-PASSWORD
-                PERFORM UNTIL WS-EOF = 'Y'
-                    READ USER-FILE INTO USER-RECORD
-                        AT END
-                            MOVE 'Y' TO WS-EOF
-                        NOT AT END
-                IF WS-USERNAME = USER-ID THEN 
-                   MOVE 'Y' TO WS-EXIST
-                   IF WS-PASSWORD = USER-PASSWORD THEN 
-                       MOVE 'Y' TO WS-VALID
-                       DISPLAY "LOGIN SUCCESSFUL"
-                   CLOSE USER-FILE
-                   END-IF
-                END-IF
-                END-PERFORM
+       OPEN I-O USER-FILE 
+       DISPLAY "LOGIN - ENTER YOUR CREDENTIALS"
+       DISPLAY "ENTER USERNAME: " NO ADVANCING
+       ACCEPT USER-ID
+
+           READ USER-FILE KEY IS USER-ID
+           INVALID KEY
+       DISPLAY "RECORD NOT FOUND FOR USER-ID: "USER-ID
+       DISPLAY "PLEASE REGISTER FIRST!"
+           NOT INVALID KEY
+               DISPLAY "ENTER PASSWORD: " NO ADVANCING
+               ACCEPT WS-INPUT-PASSWORD
+               IF WS-INPUT-PASSWORD = USER-PASSWORD
+                DISPLAY "LOGIN SUCCESSFUL! WELCOME " EMPLOYEE-NAME
                 CLOSE USER-FILE
-                IF WS-EXIST = 'N' THEN
-                   DISPLAY "ACCOUNT DOES NOT EXIST"
-                ELSE IF WS-VALID = 'N' THEN
-                   DISPLAY "INCORRECT USERNAME OR PASSWORD"
-                END-IF.
+                PERFORM MAIN-PARA
+        
+               ELSE
+                DISPLAY "ERROR: INCORRECT PASSWORD. PLEASE TRY AGAIN."
+                END-READ.
+                CLOSE USER-FILE
+                PERFORM USER-LOGIN
+       STOP RUN.
+
+        MAIN-PARA.
+        PERFORM UNTIL CHOICE = 5
+        DISPLAY "EMPLOYEE RECORD MANAGEMENT"
+        DISPLAY "1 - EDIT/DELETE EMPLOYEE RECORD"
+        DISPLAY "2 - VIEW EMPLOYEE RECORD"
+        DISPLAY "3 - ATTENDANCE"
+        DISPLAY "4 - GENERATE PAYSLIP"
+        DISPLAY "5 - BACK"
+        DISPLAY "ENTER YOUR CHOICE: " WITH NO ADVANCING
+        ACCEPT CHOICE
+
+        EVALUATE CHOICE
+        WHEN 1
+            PERFORM EDIT-DELETE
+        WHEN 2
+            PERFORM VIEW-RECORD
+        WHEN 3
+            PERFORM ATTENDANCE
+        WHEN 4
+            PERFORM PAYSLIP
+        WHEN 5
+            PERFORM MAIN-MENU
+
+        END-PERFORM   
+        STOP RUN.
+
+        EDIT-DELETE.
+        DISPLAY "1 - EDIT EMPLOYEE RECORD"
+        DISPLAY "2 - DELETE EMPLOYEE RECORD"
+        DISPLAY "3 - BACK"
+        DISPLAY "ENTER YOUR CHOICE: " WITH NO ADVANCING
+        ACCEPT CHOICE
+        
+        EVALUATE CHOICE
+        WHEN 1
+            PERFORM EDIT-RECORD
+        WHEN 2
+            PERFORM DELETE-RECORD
+        WHEN 3
+            PERFORM MAIN-PARA
+        STOP RUN. 
+
+        EDIT-RECORD.
+
+        STOP RUN.
+
+        DELETE-RECORD.
+
+        STOP RUN.
+
+        VIEW-RECORD.
+        DISPLAY "1 - VIEW EMPLOYEE RECORD"
+        DISPLAY "2 - BACK"
+        ACCEPT CHOICE
+        
+        EVALUATE CHOICE
+        WHEN 1
+            PERFORM RECORD-FILE
+        WHEN 2
+            PERFORM MAIN-PARA
+        STOP RUN. 
+
+       RECORD-FILE.
+       DISPLAY "ENTER YOUR USERNAME: " WITH NO ADVANCING
+       ACCEPT USER-ID 
+       OPEN I-O USER-FILE.
+           READ USER-FILE KEY IS USER-ID
+               INVALID KEY
+                   DISPLAY "RECORD NOT FOUND FOR USER-ID: " USER-ID
+               NOT INVALID KEY
+                   DISPLAY "RECORD FOUND:"
+                   DISPLAY "USER-ID: " USER-ID
+                   DISPLAY "PASSWORD: " USER-PASSWORD
+                   DISPLAY "EMPLOYEE NAME: " EMPLOYEE-NAME
+                   DISPLAY "EMPLOYEE DOB: " EMPLOYEE-DOB
+                   DISPLAY "EMPLOYEE GENDER: " EMPLOYEE-GENDER
+                   DISPLAY "EMPLOYEE STATUS: " EMPLOYEE-MARITAL-STATUS
+                   DISPLAY "EMPLOYEE NATIONALITY: " EMPLOYEE-NATIONALITY
+                   DISPLAY "EMPLOYEE EMAIL: " EMPLOYEE-EMAIL
+                   DISPLAY "EMPLOYEE CONTACT: " EMPLOYEE-CONTACT
+                   DISPLAY "EMPLOYEE ADDRESS: " EMPLOYEE-ADDRESS
+           END-READ.
+       CLOSE USER-FILE.
+       PERFORM MAIN-MENU
+           STOP RUN.
+
+        ATTENDANCE.
+        DISPLAY "1 - TIME IN"
+        DISPLAY "2 - TIME OUT"
+        DISPLAY "3 - LEAVE"
+        DISPLAY "4 - BACK"
+        STOP RUN.
+
+        PAYSLIP.
+        DISPLAY "1 - GENERATE PAYSLIP"
+        DISPLAY "2 - BACK"
+        STOP RUN.
