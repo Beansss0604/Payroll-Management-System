@@ -8,7 +8,7 @@
        01 LINE-NUMBER    PIC 99 VALUE 1.
        01 BORDER-TOP     PIC X(51) 
            VALUE "===================================================".
-       01 BORDER-BOTTOM  PIC X(51) s
+       01 BORDER-BOTTOM  PIC X(51) 
            VALUE "===================================================".
        01 SPACE-LINE     PIC X(51) 
            VALUE "||                                                ||".
@@ -52,4 +52,4 @@
 
            DISPLAY BORDER-BOTTOM.
 
-       END PROGRAM UI.
+       END PROGRAM UI. 
