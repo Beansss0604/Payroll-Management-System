@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+import subprocess
 
 connection = sqlite3.connect("Attendance.db")
 cursor = connection.cursor()
@@ -217,6 +218,9 @@ def leave_application():
     except sqlite3.Error as e:
      print("Leave Application process failed.\n")
 
+def cobol_back():
+    subprocess.run(['./main'])
+
 def main_menu():
     while True:
         # Display menu options
@@ -226,7 +230,7 @@ def main_menu():
         print("3 - HOLIDAY ATTENDANCE")
         print("4 - LEAVE APPLICATION")
         print("5 - FETCH RECORDS")
-        print("6 - EXIT")
+        print("6 - RETURN TO MAIN MANU")
 
         # Accept user's choice
         try:
@@ -247,8 +251,7 @@ def main_menu():
         elif choice == 5:
             fetch_mainmenu()
         elif choice == 6:
-            print("Exiting the program. Goodbye!")
-            break
+            cobol_back()
         else:
             print("Invalid choice. Please select a valid option (1-6).\n")
 
