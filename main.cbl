@@ -26,9 +26,8 @@
 
        WORKING-STORAGE SECTION.
        01 CHOICE PIC 9.
-       01 WS-OPEN PIC X VALUE 'Y'.
+       01 WS-OPEN PIC X.
        01 WS-INPUT-PASSWORD PIC X(30).
-       01 WS-DUMMY-INPUT PIC X(1). 
 
        PROCEDURE DIVISION.
        MAIN-MENU.
@@ -85,11 +84,14 @@
            DISPLAY "||||||||||||  USERNAME ALREADY EXISTS! ||||||||||||"
            DISPLAY "|||||||||||||=========================|||||||||||||"
            DISPLAY "|=================================================|"
-           DISPLAY "Press enter to try again... " 
-           ACCEPT WS-DUMMY-INPUT 
-               END-READ.
-               CLOSE USER-FILE
-               PERFORM USER-REGISTER
+          DISPLAY "[DO YOU WANT TO CONTINUE? (Y/N)]: " WITH NO ADVANCING
+           ACCEPT WS-OPEN
+              IF WS-OPEN = "Y" OR "y"
+                    CLOSE USER-FILE
+                    PERFORM USER-REGISTER
+                ELSE
+                    CLOSE USER-FILE
+                    PERFORM MAIN-MENU
          STOP RUN.
      
        USER-REGISTER-LOOP.
@@ -155,7 +157,7 @@
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"   
            DISPLAY "Press enter to try again... " 
-           ACCEPT WS-DUMMY-INPUT 
+           ACCEPT OMITTED
            CLOSE USER-FILE
            PERFORM USER-LOGIN
            NOT INVALID KEY
@@ -176,10 +178,14 @@
            DISPLAY "||  ERROR: INCORRECT PASSWORD. PLEASE TRY AGAIN. ||"
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"
-
-                END-READ.
+           DISPLAY "DO YOU WANT TO TRY AGAIN? (Y/N): " WITH NO ADVANCING
+              ACCEPT WS-OPEN
+                IF WS-OPEN = "Y" OR "y"
+                    CLOSE USER-FILE
+                        PERFORM USER-LOGIN
+                    ELSE
                 CLOSE USER-FILE
-                PERFORM USER-LOGIN
+                PERFORM MAIN-MENU
        STOP RUN.
 
         MAIN-PARA.
@@ -254,13 +260,14 @@
 
         VIEW-RECORD.
         DISPLAY "1 - VIEW EMPLOYEE RECORD"
-        DISPLAY "2 - BACK"
+        DISPLAY "2 - VIEW ATTENDANCE RECORD"
+        DISPLAY "3 - BACK"
         ACCEPT CHOICE
         
         EVALUATE CHOICE
         WHEN 1
             PERFORM RECORD-FILE
-        WHEN 2
+        WHEN 3
             PERFORM MAIN-PARA
         STOP RUN. 
 
@@ -285,6 +292,8 @@
                    DISPLAY "EMPLOYEE ADDRESS: " EMPLOYEE-ADDRESS
            END-READ.
        CLOSE USER-FILE.
+       DISPLAY "PRESS ENTER TO CONTINUE..."
+         ACCEPT OMITTED
        PERFORM MAIN-MENU
            STOP RUN.
 
