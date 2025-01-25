@@ -25,7 +25,12 @@
 
        WORKING-STORAGE SECTION.
        01 CHOICE PIC 9.
+<<<<<<< HEAD
        01 WS-OPEN PIC X VALUE 'Y'.
+=======
+       01 WS-OPEN PIC X.
+       01 WS-NEW-VALUE PIC X(40).
+>>>>>>> 3a32548fe65cb117bcd862fb29a90038a3ddbb09
        01 WS-INPUT-PASSWORD PIC X(30).
        01 WS-DUMMY-INPUT PIC X(1). 
 
@@ -156,20 +161,27 @@
            DISPLAY "             PLEASE REGISTER FIRST!"
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"   
-           DISPLAY "Press enter to try again... " 
-           ACCEPT OMITTED
-           CLOSE USER-FILE
-           PERFORM USER-LOGIN
+          DISPLAY "[DO YOU WANT TO CONTINUE? (Y/N)]: " WITH NO ADVANCING
+           ACCEPT WS-OPEN
+              IF WS-OPEN = "Y" OR "y"
+                    CLOSE USER-FILE
+                    PERFORM USER-LOGIN
+                ELSE
+                    CLOSE USER-FILE
+                    PERFORM MAIN-MENU
            NOT INVALID KEY
            DISPLAY "==================================================="          
            DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
                ACCEPT WS-INPUT-PASSWORD
                IF WS-INPUT-PASSWORD = USER-PASSWORD
+       PERFORM CLEARSCREEN
            DISPLAY "|=================================================|"
            DISPLAY "|||=============================================|||"
            DISPLAY "     LOGIN SUCCESSFUL! WELCOME " EMPLOYEE-NAME     
            DISPLAY "|||=============================================|||"
-           DISPLAY "|=================================================|"   
+           DISPLAY "|=================================================|"
+              DISPLAY "PRESS ENTER TO CONTINUE..."
+              ACCEPT OMITTED   
                 CLOSE USER-FILE
                 PERFORM MAIN-PARA       
                ELSE
