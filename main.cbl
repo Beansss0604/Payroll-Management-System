@@ -69,18 +69,22 @@
        USER-REGISTER.
        PERFORM CLEARSCREEN
        OPEN I-O USER-FILE
-           DISPLAY "==================================================="
-           DISPLAY "|                R E G I S T E R                  |" 
-           DISPLAY "==================================================="
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"     
+           DISPLAY "|||||||||||||||  [1] - REGISTER     |||||||||||||||"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"
+           DISPLAY "|=================================================|"
            DISPLAY "[ENTER USERNAME]: " WITH NO ADVANCING
            ACCEPT USER-ID
        READ USER-FILE KEY IS USER-ID
            INVALID KEY
                PERFORM USER-REGISTER-LOOP
            NOT INVALID KEY
-           DISPLAY "==================================================="
-           DISPLAY "|             USERNAME ALREADY EXISTS!            |"
-           DISPLAY "==================================================="
+           DISPLAY "|=================================================|"
+           DISPLAY "|||||||||||||=========================|||||||||||||"     
+           DISPLAY "||||||||||||  USERNAME ALREADY EXISTS! ||||||||||||"
+           DISPLAY "|||||||||||||=========================|||||||||||||"
+           DISPLAY "|=================================================|"
            DISPLAY "Press enter to try again... " 
            ACCEPT WS-DUMMY-INPUT 
                END-READ.
@@ -90,82 +94,124 @@
      
        USER-REGISTER-LOOP.
            DISPLAY "==================================================="
-            DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
+           DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
             ACCEPT USER-PASSWORD
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE NAME]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE NAME]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-NAME
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE DOB(mm/dd/yy)]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE DOB(mm/dd/yy)]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-DOB
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE GENDER(M/F)]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE GENDER(M/F)]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-GENDER
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE STATUS(Single, Married, etc)]: "
+           DISPLAY "[ENTER EMPLOYEE STATUS(Single, Married, etc)]: "
             WITH NO ADVANCING
             ACCEPT EMPLOYEE-MARITAL-STATUS
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE NATIONALITY]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE NATIONALITY]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-NATIONALITY
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE EMAIL]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE EMAIL]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-EMAIL
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE CONTACT]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE CONTACT]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-CONTACT
            DISPLAY "==================================================="
-            DISPLAY "[ENTER EMPLOYEE ADDRESS]: " WITH NO ADVANCING
+           DISPLAY "[ENTER EMPLOYEE ADDRESS]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-ADDRESS
             
             
             WRITE USER-RECORD
               END-WRITE.
               CLOSE USER-FILE
-           DISPLAY "==================================================="   
-           DISPLAY "|         USER REGISTERED SUCCESSFULLY!           |"
-           DISPLAY "==================================================="  
+           DISPLAY "|=================================================|"
+           DISPLAY "|||||||||====================================||||||"     
+           DISPLAY "||||||||  USERNAME RESGISTERED SUCCESSFULLY!  |||||"
+           DISPLAY "|||||||||====================================||||||"
+           DISPLAY "|=================================================|"
            PERFORM MAIN-MENU
            STOP RUN.
 
        USER-LOGIN.
        OPEN I-O USER-FILE 
        PERFORM CLEARSCREEN
-           DISPLAY "==================================================="
-           DISPLAY "|                  L O G  I N                     |" 
-           DISPLAY "==================================================="
-       DISPLAY "ENTER USERNAME: " NO ADVANCING
-       ACCEPT USER-ID
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"
+           DISPLAY "|||||||||||||||    [2] - LOGIN      |||||||||||||||"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "[ENTER USERNAME]: " NO ADVANCING
+           ACCEPT USER-ID
+
 
            READ USER-FILE KEY IS USER-ID
            INVALID KEY
-       DISPLAY "RECORD NOT FOUND FOR USER-ID: "USER-ID
-       DISPLAY "PLEASE REGISTER FIRST!"
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "      RECORD NOT FOUND FOR USER-ID: " USER-ID
+           DISPLAY "             PLEASE REGISTER FIRST!"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"   
+           DISPLAY "Press enter to try again... " 
+           ACCEPT WS-DUMMY-INPUT 
+           CLOSE USER-FILE
+           PERFORM USER-LOGIN
            NOT INVALID KEY
-               DISPLAY "ENTER PASSWORD: " NO ADVANCING
+           DISPLAY "==================================================="          
+           DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
                ACCEPT WS-INPUT-PASSWORD
                IF WS-INPUT-PASSWORD = USER-PASSWORD
-                DISPLAY "LOGIN SUCCESSFUL! WELCOME " EMPLOYEE-NAME
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "     LOGIN SUCCESSFUL! WELCOME " EMPLOYEE-NAME     
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"   
                 CLOSE USER-FILE
-                PERFORM MAIN-PARA
-        
+                PERFORM MAIN-PARA       
                ELSE
-                DISPLAY "ERROR: INCORRECT PASSWORD. PLEASE TRY AGAIN."
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"     
+           DISPLAY "||  ERROR: INCORRECT PASSWORD. PLEASE TRY AGAIN. ||"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"
+
                 END-READ.
                 CLOSE USER-FILE
                 PERFORM USER-LOGIN
        STOP RUN.
 
         MAIN-PARA.
+        PERFORM CLEARSCREEN
         PERFORM UNTIL CHOICE = 5
-        DISPLAY "EMPLOYEE RECORD MANAGEMENT"
-        DISPLAY "1 - EDIT/DELETE EMPLOYEE RECORD"
-        DISPLAY "2 - VIEW EMPLOYEE RECORD"
-        DISPLAY "3 - ATTENDANCE"
-        DISPLAY "4 - GENERATE PAYSLIP"
-        DISPLAY "5 - BACK"
-        DISPLAY "ENTER YOUR CHOICE: " WITH NO ADVANCING
-        ACCEPT CHOICE
+           DISPLAY "==================================================="
+           DISPLAY "|||||||||||===============================|||||||||" 
+           DISPLAY "|||||||||| $ EMPLOYEE RECORD MANAGEMENT $  ||||||||"
+           DISPLAY "|||||||||||===============================|||||||||"       
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"     
+           DISPLAY "|||||   [1] - EDIT/DELETE EMPLOYEE RECORD     |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [2] - VIEW EMPLOYEE RECORD        |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [3] - ATTENDANCE                  |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [4] - GENERATE PAYSLIP            |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [5] - BACK TO MENU                |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "[CHOOSE AN OPTION]: " WITH NO ADVANCING           
+           ACCEPT CHOICE
 
         EVALUATE CHOICE
         WHEN 1
