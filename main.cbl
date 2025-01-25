@@ -24,11 +24,10 @@
            02 EMPLOYEE-ADDRESS PIC X(40).
 
        WORKING-STORAGE SECTION.
-           01 CHOICE PIC 9.
-           01 WS-OPEN PIC X VALUE 'Y'.
-           01 WS-INPUT-PASSWORD PIC X(30).
-           01 WS-DUMMY-INPUT PIC X(1). 
-           01 WS-NEW-VALUE PIC X(40).
+       01 CHOICE PIC 9.
+       01 WS-OPEN PIC X VALUE 'Y'.
+       01 WS-INPUT-PASSWORD PIC X(30).
+       01 WS-DUMMY-INPUT PIC X(1). 
 
        PROCEDURE DIVISION.
        MAIN-MENU.
@@ -87,11 +86,14 @@
            DISPLAY "||||||||||||  USERNAME ALREADY EXISTS! ||||||||||||"
            DISPLAY "|||||||||||||=========================|||||||||||||"
            DISPLAY "|=================================================|"
-           DISPLAY "Press enter to try again... " 
-           ACCEPT WS-DUMMY-INPUT 
-               END-READ.
-               CLOSE USER-FILE
-               PERFORM USER-REGISTER
+          DISPLAY "[DO YOU WANT TO CONTINUE? (Y/N)]: " WITH NO ADVANCING
+           ACCEPT WS-OPEN
+              IF WS-OPEN = "Y" OR "y"
+                    CLOSE USER-FILE
+                    PERFORM USER-REGISTER
+                ELSE
+                    CLOSE USER-FILE
+                    PERFORM MAIN-MENU
          STOP RUN.
      
        USER-REGISTER-LOOP.
@@ -155,7 +157,7 @@
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"   
            DISPLAY "Press enter to try again... " 
-           ACCEPT WS-DUMMY-INPUT 
+           ACCEPT OMITTED
            CLOSE USER-FILE
            PERFORM USER-LOGIN
            NOT INVALID KEY
@@ -176,10 +178,15 @@
            DISPLAY "||  ERROR: INCORRECT PASSWORD. PLEASE TRY AGAIN. ||"
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"
-
-                END-READ.
+           DISPLAY "DO YOU WANT TO TRY AGAIN? (Y/N): " WITH NO ADVANCING
+              ACCEPT WS-OPEN
+                IF WS-OPEN = "Y" OR "y"
+                    CLOSE USER-FILE
+                        PERFORM USER-LOGIN
+                    ELSE
                 CLOSE USER-FILE
-                PERFORM USER-LOGIN.
+                PERFORM USER-LOGIN
+       STOP RUN.
 
         MAIN-PARA.
            PERFORM CLEAR-SCREEN
@@ -347,21 +354,17 @@
 
            STOP RUN.
 
-       VIEW-RECORD.
-           PERFORM UNTIL CHOICE = 2
-           DISPLAY "1 - VIEW EMPLOYEE RECORD"
-           DISPLAY "2 - BACK"
-           ACCEPT CHOICE
+        VIEW-RECORD.
+        DISPLAY "1 - VIEW EMPLOYEE RECORD"
+        DISPLAY "2 - BACK"
+        ACCEPT CHOICE
         
-           EVALUATE CHOICE
-           WHEN 1
-               PERFORM RECORD-FILE
-           WHEN 2
-               PERFORM MAIN-PARA
-           WHEN OTHER 
-               DISPLAY "INVALID OPTION"
-           END-EVALUATE
-           END-PERFORM. 
+        EVALUATE CHOICE
+        WHEN 1
+            PERFORM RECORD-FILE
+        WHEN 2
+            PERFORM MAIN-PARA
+        STOP RUN. 
 
        RECORD-FILE.
            DISPLAY "ENTER YOUR USERNAME: " WITH NO ADVANCING
@@ -383,8 +386,8 @@
                    DISPLAY "EMPLOYEE CONTACT: " EMPLOYEE-CONTACT
                    DISPLAY "EMPLOYEE ADDRESS: " EMPLOYEE-ADDRESS
            END-READ.
-           CLOSE USER-FILE.
-           PERFORM MAIN-MENU
+       CLOSE USER-FILE.
+       PERFORM MAIN-MENU
            STOP RUN.
 
         ATTENDANCE.
