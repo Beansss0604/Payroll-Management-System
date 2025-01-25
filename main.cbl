@@ -3,11 +3,10 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT USER-FILE
-           ASSIGN TO "Record.txt"
-           ORGANIZATION IS INDEXED
-            ACCESS MODE IS RANDOM
-            RECORD KEY IS USER-ID.
+           SELECT USER-FILE ASSIGN TO "Record.txt"
+               ORGANIZATION IS INDEXED
+               ACCESS MODE IS RANDOM
+               RECORD KEY IS USER-ID.
 
        DATA DIVISION.
        FILE SECTION.
@@ -25,14 +24,15 @@
            02 EMPLOYEE-ADDRESS PIC X(40).
 
        WORKING-STORAGE SECTION.
-       01 CHOICE PIC 9.
-       01 WS-OPEN PIC X VALUE 'Y'.
-       01 WS-INPUT-PASSWORD PIC X(30).
-       01 WS-DUMMY-INPUT PIC X(1). 
+           01 CHOICE PIC 9.
+           01 WS-OPEN PIC X VALUE 'Y'.
+           01 WS-INPUT-PASSWORD PIC X(30).
+           01 WS-DUMMY-INPUT PIC X(1). 
+           01 WS-NEW-VALUE PIC X(40).
 
        PROCEDURE DIVISION.
        MAIN-MENU.
-           PERFORM CLEARSCREEN
+           PERFORM CLEAR-SCREEN
            PERFORM UNTIL CHOICE = 3
            DISPLAY "==================================================="
            DISPLAY "|||||||||||===============================|||||||||" 
@@ -59,15 +59,17 @@
                    PERFORM USER-REGISTER
                WHEN 2
                    PERFORM USER-LOGIN
+               WHEN 3
+                     DISPLAY "PROGRAM TERMINATED."
+                     STOP RUN
                WHEN OTHER
                   DISPLAY "INVALID OPTION"
            END-EVALUATE
            END-PERFORM.
            STOP RUN.
       
-
        USER-REGISTER.
-       PERFORM CLEARSCREEN
+       PERFORM CLEAR-SCREEN
        OPEN I-O USER-FILE
            DISPLAY "|=================================================|"
            DISPLAY "||||||||||||||||===================||||||||||||||||"     
@@ -95,35 +97,34 @@
        USER-REGISTER-LOOP.
            DISPLAY "==================================================="
            DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
-            ACCEPT USER-PASSWORD
+               ACCEPT USER-PASSWORD
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE NAME]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-NAME
+               ACCEPT EMPLOYEE-NAME
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE DOB(mm/dd/yy)]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-DOB
+               ACCEPT EMPLOYEE-DOB
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE GENDER(M/F)]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-GENDER
+               ACCEPT EMPLOYEE-GENDER
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE STATUS(Single, Married, etc)]: "
             WITH NO ADVANCING
-            ACCEPT EMPLOYEE-MARITAL-STATUS
+               ACCEPT EMPLOYEE-MARITAL-STATUS
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE NATIONALITY]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-NATIONALITY
+               ACCEPT EMPLOYEE-NATIONALITY
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE EMAIL]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-EMAIL
+               ACCEPT EMPLOYEE-EMAIL
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE CONTACT]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-CONTACT
+               ACCEPT EMPLOYEE-CONTACT
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE ADDRESS]: " WITH NO ADVANCING
-            ACCEPT EMPLOYEE-ADDRESS
+               ACCEPT EMPLOYEE-ADDRESS
             
-            
-            WRITE USER-RECORD
+           WRITE USER-RECORD
               END-WRITE.
               CLOSE USER-FILE
            DISPLAY "|=================================================|"
@@ -136,7 +137,7 @@
 
        USER-LOGIN.
        OPEN I-O USER-FILE 
-       PERFORM CLEARSCREEN
+       PERFORM CLEAR-SCREEN
            DISPLAY "|=================================================|"
            DISPLAY "||||||||||||||||===================||||||||||||||||"
            DISPLAY "|||||||||||||||    [2] - LOGIN      |||||||||||||||"
@@ -144,7 +145,6 @@
            DISPLAY "|=================================================|"
            DISPLAY "[ENTER USERNAME]: " NO ADVANCING
            ACCEPT USER-ID
-
 
            READ USER-FILE KEY IS USER-ID
            INVALID KEY
@@ -179,12 +179,11 @@
 
                 END-READ.
                 CLOSE USER-FILE
-                PERFORM USER-LOGIN
-       STOP RUN.
+                PERFORM USER-LOGIN.
 
         MAIN-PARA.
-        PERFORM CLEARSCREEN
-        PERFORM UNTIL CHOICE = 5
+           PERFORM CLEAR-SCREEN
+           PERFORM UNTIL CHOICE = 5
            DISPLAY "==================================================="
            DISPLAY "|||||||||||===============================|||||||||" 
            DISPLAY "|||||||||| $ EMPLOYEE RECORD MANAGEMENT $  ||||||||"
@@ -213,61 +212,161 @@
            DISPLAY "[CHOOSE AN OPTION]: " WITH NO ADVANCING           
            ACCEPT CHOICE
 
-        EVALUATE CHOICE
-        WHEN 1
-            PERFORM EDIT-DELETE
-        WHEN 2
-            PERFORM VIEW-RECORD
-        WHEN 3
-            PERFORM ATTENDANCE
-        WHEN 4
-            PERFORM PAYSLIP
-        WHEN 5
-            PERFORM MAIN-MENU
-
-        END-PERFORM   
-        STOP RUN.
+           EVALUATE CHOICE
+           WHEN 1
+               PERFORM EDIT-DELETE
+           WHEN 2
+               PERFORM VIEW-RECORD
+           WHEN 3
+               PERFORM ATTENDANCE
+           WHEN 4
+               PERFORM PAYSLIP
+           WHEN 5
+               PERFORM MAIN-MENU
+           WHEN OTHER 
+               DISPLAY " "
+               DISPLAY "INVALID OPTION"
+           
+           END-EVALUATE
+           END-PERFORM   
+           STOP RUN.
 
         EDIT-DELETE.
-        DISPLAY "1 - EDIT EMPLOYEE RECORD"
-        DISPLAY "2 - DELETE EMPLOYEE RECORD"
-        DISPLAY "3 - BACK"
-        DISPLAY "ENTER YOUR CHOICE: " WITH NO ADVANCING
-        ACCEPT CHOICE
+           PERFORM UNTIL CHOICE = 3
+           DISPLAY "1 - EDIT EMPLOYEE RECORD"
+           DISPLAY "2 - DELETE EMPLOYEE RECORD"
+           DISPLAY "3 - BACK"
+           DISPLAY "ENTER YOUR CHOICE: " WITH NO ADVANCING
+           ACCEPT CHOICE
         
-        EVALUATE CHOICE
-        WHEN 1
-            PERFORM EDIT-RECORD
-        WHEN 2
-            PERFORM DELETE-RECORD
-        WHEN 3
-            PERFORM MAIN-PARA
-        STOP RUN. 
+           EVALUATE CHOICE
+           WHEN 1
+               PERFORM EDIT-RECORD
+           WHEN 2
+               PERFORM DELETE-RECORD
+           WHEN 3
+               PERFORM MAIN-PARA
+           WHEN OTHER 
+               DISPLAY " "
+               DISPLAY "INVALID OPTION"
+           END-EVALUATE 
+           END-PERFORM. 
 
         EDIT-RECORD.
+           DISPLAY "ENTER EMPLOYEE NAME TO EDIT: " WITH NO ADVANCING
+           ACCEPT USER-ID
 
-        STOP RUN.
+           OPEN I-O USER-FILE
+           READ USER-FILE KEY IS USER-ID
+               INVALID KEY
+                   DISPLAY "EMPLOYEE NOT FOUND"
+                   CLOSE USER-FILE
+                   EXIT
+               NOT INVALID KEY
+           DISPLAY "CURRENT PASSWORD: " USER-PASSWORD
+           DISPLAY "ENTER NEW PASSWORD(PRESS ENTER TO KEEP CURRENT): "
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO USER-PASSWORD
+           END-IF
 
-        DELETE-RECORD.
+           DISPLAY "CURRENT NAME: " EMPLOYEE-NAME
+           DISPLAY "ENTER NEW NAME(PRESS ENTER TO KEEP CURRENT): "
+           WITH NO ADVANCING 
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+                MOVE WS-NEW-VALUE TO EMPLOYEE-NAME
+           END-IF
 
-        STOP RUN.
+           DISPLAY "CURRENT DOB: " EMPLOYEE-DOB
+           DISPLAY "ENTER NEW DOB(PRESS ENTER TO KEEP CURRENT): " 
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-DOB
+           END-IF
 
-        VIEW-RECORD.
-        DISPLAY "1 - VIEW EMPLOYEE RECORD"
-        DISPLAY "2 - BACK"
-        ACCEPT CHOICE
+           DISPLAY "CURRENT GENDER: " EMPLOYEE-GENDER
+           DISPLAY "ENTER NEW GENDER(PRESS ENTER TO KEEP CURRENT): " 
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-GENDER
+           END-IF
+
+           DISPLAY "CURRENT MARITAL STATUS: " EMPLOYEE-MARITAL-STATUS
+       DISPLAY "ENTER NEW MARITAL STATUS(PRESS ENTER TO KEEP CURRENT): "
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-MARITAL-STATUS
+           END-IF
+
+           DISPLAY "CURRENT NATIONALITY: " EMPLOYEE-NATIONALITY
+       DISPLAY "ENTER NEW NATIONALITY(Press ENTER to keep current): " 
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-NATIONALITY
+           END-IF
+
+           DISPLAY "CURRENT EMAIL: " EMPLOYEE-EMAIL
+           DISPLAY "ENTER NEW EMAIL(PRESS ENTER TO KEEP CURRENT): " 
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-EMAIL
+           END-IF
+
+           DISPLAY "CURRENT CONTACT: " EMPLOYEE-CONTACT
+           DISPLAY "ENTER NEW CONTACT(PRESS ENTER TO KEEP CURRENT): " 
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-CONTACT
+           END-IF
+
+           DISPLAY "CURRENT ADDRESS: " EMPLOYEE-ADDRESS
+           DISPLAY "ENTER NEW ADDRESS(PRESS ENTER TO KEEP CURRENT): " 
+           WITH NO ADVANCING
+           ACCEPT WS-NEW-VALUE
+           IF WS-NEW-VALUE NOT = SPACES THEN
+               MOVE WS-NEW-VALUE TO EMPLOYEE-ADDRESS
+           END-IF
+           
+           REWRITE USER-RECORD
+               INVALID KEY
+                   DISPLAY "ERROR: UNABLE TO UPDATE RECORD"
+           END-REWRITE
+           DISPLAY "RECORD UPDATED SUCCESSFULLY"
+           END-READ.
+           CLOSE USER-FILE.
+
+       DELETE-RECORD.
+
+           STOP RUN.
+
+       VIEW-RECORD.
+           PERFORM UNTIL CHOICE = 2
+           DISPLAY "1 - VIEW EMPLOYEE RECORD"
+           DISPLAY "2 - BACK"
+           ACCEPT CHOICE
         
-        EVALUATE CHOICE
-        WHEN 1
-            PERFORM RECORD-FILE
-        WHEN 2
-            PERFORM MAIN-PARA
-        STOP RUN. 
+           EVALUATE CHOICE
+           WHEN 1
+               PERFORM RECORD-FILE
+           WHEN 2
+               PERFORM MAIN-PARA
+           WHEN OTHER 
+               DISPLAY "INVALID OPTION"
+           END-EVALUATE
+           END-PERFORM. 
 
        RECORD-FILE.
-       DISPLAY "ENTER YOUR USERNAME: " WITH NO ADVANCING
-       ACCEPT USER-ID 
-       OPEN I-O USER-FILE.
+           DISPLAY "ENTER YOUR USERNAME: " WITH NO ADVANCING
+               ACCEPT USER-ID 
+           OPEN I-O USER-FILE.
            READ USER-FILE KEY IS USER-ID
                INVALID KEY
                    DISPLAY "RECORD NOT FOUND FOR USER-ID: " USER-ID
@@ -284,26 +383,22 @@
                    DISPLAY "EMPLOYEE CONTACT: " EMPLOYEE-CONTACT
                    DISPLAY "EMPLOYEE ADDRESS: " EMPLOYEE-ADDRESS
            END-READ.
-       CLOSE USER-FILE.
-       PERFORM MAIN-MENU
+           CLOSE USER-FILE.
+           PERFORM MAIN-MENU
            STOP RUN.
 
         ATTENDANCE.
-        DISPLAY "1 - TIME IN"
-        DISPLAY "2 - TIME OUT"
-        DISPLAY "3 - LEAVE"
-        DISPLAY "4 - BACK"
-        STOP RUN.
+           DISPLAY "1 - TIME IN"
+           DISPLAY "2 - TIME OUT"
+           DISPLAY "3 - LEAVE"
+           DISPLAY "4 - BACK"
+           STOP RUN.
 
         PAYSLIP.
-        DISPLAY "1 - GENERATE PAYSLIP"
-        DISPLAY "2 - BACK"
-        STOP RUN.
+           DISPLAY "1 - GENERATE PAYSLIP"
+           DISPLAY "2 - BACK"
+           STOP RUN.
 
-       CLEARSCREEN.
+       CLEAR-SCREEN.
            CALL 'SYSTEM' USING 'clear'.
-
-      
-
-
         
