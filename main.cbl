@@ -61,10 +61,16 @@
                    PERFORM USER-REGISTER
                WHEN 2
                    PERFORM USER-LOGIN
+               WHEN 3
+                   DISPLAY "THANK YOU FOR USING THE SYSTEM!"
+                   STOP RUN
                WHEN OTHER
                   DISPLAY "INVALID OPTION"
+                  DISPLAY 'PRESS ENTER TO CONTINUE...' WITH NO ADVANCING
+                  ACCEPT OMITTED
+                  PERFORM MAIN-MENU
            END-EVALUATE
-           END-PERFORM.
+           END-PERFORM
            STOP RUN.
       
 
