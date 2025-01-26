@@ -219,7 +219,7 @@ def leave_application():
      print("Leave Application process failed.\n")
 
 def cobol_back():
-    subprocess.run(['./main'])
+    subprocess.run(['./Subprog'])
 
 def main_menu():
     while True:
