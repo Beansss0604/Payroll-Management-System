@@ -77,21 +77,22 @@ def fetch_leave():
 
         rows = cursor.fetchall()
 
-        row_count = 0
-
         if rows:
+            row_count = 0
             print(f"\nRecords found for username '{username}':")
             print("===================================================")
             print(f"\nUsername |  Type  |  Date")
 
             for row in rows:
                 row_count += 1
-
                 print(f"{row[0]}  , {row[1]} , {row[2]}")
 
             print(f"\nTotal days: {row_count}")
             print("===================================================")
-            print (" ")
+            print(" ")
+        else:
+            print(f"No records found for username '{username}'.")
+            print("===================================================")
 
     except sqlite3.Error as e:
         print(f"Error fetching records for '{username}': {e}")
@@ -114,25 +115,29 @@ def fetch_holi():
 
         rows = cursor.fetchall()
 
-        row_count = 0
         if rows:
+            row_count = 0
             print(f"\nRecords found for username '{username}':")
             print("===================================================")
             print(f"\nUsername |  Date   |  Time-in  | Time-out")
 
             for row in rows:
                 row_count += 1
-
                 print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]}")
                 print("===================================================")
 
             print(f"\nTotal days: {row_count}")
             print("===================================================")
-            print (" ")
+            print(" ")
+        else:
+            print(f"No records found for username '{username}'.")
+            print("===================================================")
 
     except sqlite3.Error as e:
         print(f"Error fetching records for '{username}': {e}")
         print("Failed to fetch records.")
+
+
 
 def fetch_reg():
     clear_screen()
@@ -150,10 +155,10 @@ def fetch_reg():
 
         rows = cursor.fetchall()
 
-        row_count = 0
-        total_overtime = 0
-
         if rows:
+            row_count = 0
+            total_overtime = 0
+
             print(f"\nRecords found for username '{username}':")
             print("===================================================")
             print(f"\nUsername |  Date   |  Time-in  | Time-out | Overtime")
@@ -173,12 +178,16 @@ def fetch_reg():
             print(f"\nTotal days: {row_count}")
             print("===================================================")
             print(f"Total Overtime: {total_overtime}")
-            print (" ")
-            print (" ")
+            print(" ")
+            print(" ")
+        else:
+            print(f"No records found for username '{username}'.")
+            print("===================================================")
 
     except sqlite3.Error as e:
         print(f"Error fetching records for '{username}': {e}")
         print("Failed to fetch records.")
+
 
 def cobol_back():
     subprocess.run(['./Admin'])

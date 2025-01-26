@@ -9,6 +9,11 @@
             ACCESS MODE IS RANDOM
             RECORD KEY IS USER-ID.
 
+            SELECT PAYSLIP-FILE ASSIGN TO "Payslip.txt"
+                ORGANIZATION IS INDEXED
+                ACCESS MODE IS RANDOM
+                RECORD KEY IS USERNAME.
+
        DATA DIVISION.
        FILE SECTION.
        FD USER-FILE.
@@ -23,6 +28,25 @@
            02 EMPLOYEE-EMAIL PIC X(20).
            02 EMPLOYEE-CONTACT PIC X(12).
            02 EMPLOYEE-ADDRESS PIC X(40).
+
+       FD PAYSLIP-FILE.
+        01 PAYSLIP-RECORD.
+            02 USERNAME                 PIC X(30).
+            02 PAYSLIP-PERIOD           PIC X(30).
+            02 EMP-NAME                 PIC X(30).
+            02 BASIC-SALARY             PIC 9(4).
+            02 FD-OVERTIME              PIC Z(6).99.
+            02 FD-NIGHT-DIFF            PIC Z(6).99.
+            02 FD-HOLIDAY               PIC Z(6).99.
+            02 FD-TOTAL-PAY             PIC Z(6).99.
+            02 FD-LATE PIC Z(6).99.
+            02 FD-ABSENT PIC Z(6).99.
+            02 FD-UNDERTIME PIC Z(6).99.
+            02 FD-SSS PIC 999.
+            02 FD-PAGIBIG PIC 999.
+            02 FD-PHILHEALTH PIC 999.
+            02 FD-TOTAL-DEDUCTION PIC Z(6).99.
+            02 FD-NETPAY PIC Z(6).99.
 
        WORKING-STORAGE SECTION.
        01 CHOICE PIC 9.
@@ -646,12 +670,67 @@
            CALL "SYSTEM" USING BY REFERENCE ATT-REC.
 
         PAYSLIP.
+           PERFORM CLEAR-SCREEN
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|||||       [4] - GENERATE PAYSLIP            |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
-           STOP RUN.
+           DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
+           ACCEPT USERNAME
+           OPEN I-O PAYSLIP-FILE 
+           READ PAYSLIP-FILE KEY IS USERNAME
+           INVALID KEY
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "       RECORD NOT FOUND FOR CODE: " USERNAME       
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"
+           DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: " 
+          WITH NO ADVANCING
+           ACCEPT WS-OPEN
+              IF WS-OPEN = "Y" OR "y"
+                    CLOSE PAYSLIP-FILE
+                    PERFORM PAYSLIP
+              ELSE
+                    CLOSE PAYSLIP-FILE
+                    PERFORM MAIN-PARA
+            NOT INVALID KEY
+           DISPLAY " "
+           DISPLAY "PAYSLIP PERIOD: " PAYSLIP-PERIOD
+           DISPLAY "|=================================================|"
+           DISPLAY "EMPLOYEE NAME: " EMP-NAME
+           DISPLAY "|=================================================|"
+           DISPLAY "BASIC PAY: " BASIC-SALARY
+           DISPLAY "|=================================================|"
+           DISPLAY "|                    ADD                          |"
+           DISPLAY "|=================================================|"
+           DISPLAY "OVERTIME PAY: " FD-OVERTIME
+           DISPLAY "NIGHT DIFFERENTIAL: " FD-NIGHT-DIFF
+           DISPLAY "HOLIDAY PAY: " FD-HOLIDAY
+           DISPLAY "|=================================================|"
+           DISPLAY "TOTAL PAY: " FD-TOTAL-PAY
+           DISPLAY "|=================================================|"
+           DISPLAY "|                  DEDUCTIONS                     |"
+           DISPLAY "|=================================================|"
+           DISPLAY "SSS: " FD-SSS
+           DISPLAY "PAGIBIG: " FD-PAGIBIG
+           DISPLAY "PHILHEALTH: " FD-PHILHEALTH
+           DISPLAY "LATE/S: " FD-LATE
+           DISPLAY "ABSENT/S: " FD-ABSENT
+           DISPLAY "UNDERTIME/S: " FD-UNDERTIME
+           DISPLAY "|=================================================|"
+           DISPLAY "TOTAL DEDUCTION: " FD-TOTAL-DEDUCTION
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "               NET PAY: " FD-NETPAY
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"
+           CLOSE PAYSLIP-FILE 
+           DISPLAY "PRESS ANY KEY TO CONTINUE..."
+           ACCEPT OMITTED
+            PERFORM MAIN-PARA
+        STOP RUN.
 
        CLEAR-SCREEN.
            CALL 'SYSTEM' USING 'clear'.

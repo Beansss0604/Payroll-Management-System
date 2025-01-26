@@ -29,11 +29,13 @@
             02 EMPLOYEE-EMAIL           PIC X(20).
             02 EMPLOYEE-CONTACT         PIC X(12).
             02 EMPLOYEE-ADDRESS         PIC X(40).
+            02 SLIP-CODE                PIC X(30).
 
         FD PAYSLIP-FILE.
         01 PAYSLIP-RECORD.
             02 USERNAME                 PIC X(30).
             02 PAYSLIP-PERIOD           PIC X(30).
+            02 EMP-NAME                 PIC X(30).
             02 BASIC-SALARY             PIC 9(4).
             02 FD-OVERTIME              PIC Z(6).99.
             02 FD-NIGHT-DIFF            PIC Z(6).99.
@@ -54,7 +56,7 @@
             88 File-End VALUE "10".
         01 Start-Key PIC X(30) VALUE SPACES.
         01 CHOICE PIC 9.
-        01 WS-CHOICE PIC A(1).
+        01 WS-CHOICE PIC A.
         01 WS-OVERTIME-HOURS PIC 999.
         01 WS-OVERTIME PIC 9(5).
         01 WS-NIGHT-DIFF-HOURS PIC 999.
@@ -95,11 +97,11 @@
            DISPLAY "|||||      [3] - PROCESS EMPLOYEE PAYSLIP     |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||      [4] - GENERATE SLIP FOR EMPLOYEE   |||||"
+           DISPLAY "|||||     [4] - VIEW PAYSLIP FOR EMPLOYEE     |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||      [5] - BACK TO MENU                 |||||"
+           DISPLAY "|||||          [5] - BACK TO MENU             |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "[CHOOSE YOUR OPTION]: " WITH NO ADVANCING
@@ -110,7 +112,7 @@
                 WHEN 2
                     PERFORM VIEW-ATTENDANCE
                 WHEN 3
-                    PERFORM PROCESS-PAYSLIP
+                    PERFORM INSERTCODE
                 WHEN 4
                     PERFORM GENERATESLIP
                 WHEN 5
@@ -168,9 +170,15 @@
            DISPLAY "      RECORD NOT FOUND FOR USER-ID: " USER-ID
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"
-           DISPLAY 'PRESS ENTER TO CONTINUE...' WITH NO ADVANCING
-                  ACCEPT OMITTED
-                    PERFORM VIEWING-RECORDS
+           DISPLAY "[DO YOU WANT TO VIEW ANOTHER RECORD]? (Y/N):" 
+            NO ADVANCING
+            ACCEPT WS-CHOICE
+            IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
+                CLOSE USER-FILE
+                PERFORM VIEWING-RECORDS
+            ELSE
+                CLOSE USER-FILE
+                PERFORM MAIN-MENU
             NOT INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "||||||||||||||||=================||||||||||||||||||"     
@@ -233,7 +241,7 @@
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||       [4] - BACK TO MENU                |||||"
+           DISPLAY "|||||           [4] - BACK TO MENU            |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "[CHOOSE YOUR OPTION]: " WITH NO ADVANCING
@@ -276,12 +284,18 @@
            INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||||||||||||=========================|||||||||||||"     
-           DISPLAY "||||||||||||      INVALID OPTION!      ||||||||||||"
+           DISPLAY "||||||||||||   ERROR: NO CODE FOUND!   ||||||||||||"
            DISPLAY "|||||||||||||=========================|||||||||||||"
            DISPLAY "|=================================================|"
-           ACCEPT OMITTED
-                   CLOSE PAYSLIP-FILE
-                   PERFORM ADDITION-SALARY
+           DISPLAY "[DO YOU WANT TO TRY AGAIN]? (Y/N):" 
+            NO ADVANCING
+            ACCEPT WS-CHOICE
+            IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
+                CLOSE PAYSLIP-FILE
+                PERFORM ADDITION-SALARY
+            ELSE
+                CLOSE PAYSLIP-FILE
+                PERFORM MAIN-MENU
             NOT INVALID KEY
 
         MOVE 9720 TO BASIC-SALARY
@@ -339,11 +353,18 @@
            INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||||||||||||=========================|||||||||||||"     
-           DISPLAY "||||||||||||    EMPLOYEE NOT FOUND!    ||||||||||||"
+           DISPLAY "||||||||||||  ERROR: NO RECORD FOUND!  ||||||||||||"
            DISPLAY "|||||||||||||=========================|||||||||||||"
            DISPLAY "|=================================================|"
-                   CLOSE PAYSLIP-FILE
-                   EXIT
+           DISPLAY "[DO YOU WANT TO TRY AGAIN]? (Y/N):" 
+            NO ADVANCING
+            ACCEPT WS-CHOICE
+            IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
+                CLOSE PAYSLIP-FILE
+                PERFORM ADDITION-SALARY
+            ELSE
+                CLOSE PAYSLIP-FILE
+                PERFORM MAIN-MENU
                NOT INVALID KEY
 
            DISPLAY "ENTER LATE(MINUTES): " 
@@ -402,9 +423,10 @@
            OPEN I-O PAYSLIP-FILE
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||       [3] - CREATING PAYSLIP RECORD     |||||"
+           DISPLAY "|||||     [3] - CREATING PAYSLIP RECORD       |||||" 
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
+           DISPLAY "[ENTER PAYSLIP CODE:] " WITH NO ADVANCING
            ACCEPT USERNAME
        READ PAYSLIP-FILE KEY IS USERNAME
            INVALID KEY
@@ -427,36 +449,94 @@
          STOP RUN.
 
          GENEPAYSLIP.
+           DISPLAY "|=================================================|"
            DISPLAY "ENTER PAYSLIP PERIOD: " WITH NO ADVANCING
                 ACCEPT PAYSLIP-PERIOD
            DISPLAY "|=================================================|"
+           DISPLAY "ENTER EMPLOYEE NAME: " WITH NO ADVANCING
+                ACCEPT EMP-NAME
+           DISPLAY "|=================================================|"
+           DISPLAY "SUCCESSFULLY CREATED PAYSLIP!"
+           DISPLAY "|=================================================|"          
            WRITE PAYSLIP-RECORD
            END-WRITE.
            CLOSE PAYSLIP-FILE
+                  DISPLAY "[DO YOU WANT TO CREATE AGAIN? (Y/N)]: " 
+       WITH NO ADVANCING
+           ACCEPT WS-CHOICE
+              IF WS-CHOICE = "Y" OR "y"
+                    PERFORM INSERTCODE
+                ELSE
+                    PERFORM PROCESS-PAYSLIP
+         STOP RUN.
+
+         INSERTCODE.
+         CALL "SYSTEM" USING "clear"
+         OPEN I-O USER-FILE
+          DISPLAY " "
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"     
+           DISPLAY "|||||||||||||||  INSERTION OF CODE  |||||||||||||||"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "[ENTER USERNAME]: " WITH NO ADVANCING
+           ACCEPT USER-ID
+       READ USER-FILE KEY IS USER-ID
+           INVALID KEY
+           DISPLAY "|=================================================|"
+           DISPLAY "|||||||||||||=========================|||||||||||||"     
+           DISPLAY "||||||||||| EMPLOYEE RECORD NOT FOUND! ||||||||||||"
+           DISPLAY "|||||||||||||=========================|||||||||||||"
+           DISPLAY "|=================================================|"
+          DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: "
+           WITH NO ADVANCING
+           ACCEPT WS-CHOICE
+              IF WS-CHOICE = "Y" OR "y"
+                    CLOSE USER-FILE
+                    PERFORM INSERTCODE
+                ELSE
+                    CLOSE USER-FILE
+                    PERFORM PROCESS-PAYSLIP
+           NOT INVALID KEY
+           DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
+           ACCEPT SLIP-CODE
+         REWRITE USER-RECORD
+              END-REWRITE.
+              CLOSE USER-FILE
+           PERFORM PROCESSPAY
          STOP RUN.
 
        GENERATESLIP.
            CALL 'SYSTEM' USING 'clear'
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||    [4] - GENERATE SLIP FOR EMPLOYEE     |||||"
+           DISPLAY "|||||    [4] - VIEW PAYSLIP FOR EMPLOYEE      |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
-     
+          DISPLAY "[ENTER PAYSLIP CODE YOU WANT TO VIEW]: " 
+          WITH NO ADVANCING
        ACCEPT USERNAME
-       OPEN I-O PAYSLIP-FILE.
+       OPEN I-O PAYSLIP-FILE
        READ PAYSLIP-FILE KEY IS USERNAME
             INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||=============================================|||"
-           DISPLAY "      RECORD NOT FOUND FOR USER-ID: " USER-ID
+           DISPLAY "       RECORD NOT FOUND FOR CODE: " USERNAME       
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"
-           DISPLAY 'PRESS ENTER TO CONTINUE...' WITH NO ADVANCING
-                  ACCEPT OMITTED
+           DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: " 
+          WITH NO ADVANCING
+           ACCEPT WS-CHOICE
+              IF WS-CHOICE = "Y" OR "y"
+                    CLOSE PAYSLIP-FILE
+                    PERFORM GENERATESLIP
+              ELSE
+                    CLOSE PAYSLIP-FILE
+                    PERFORM MAIN-MENU
             NOT INVALID KEY
            DISPLAY "PAYSLIP PERIOD: " PAYSLIP-PERIOD
-      *insertname boss
+           DISPLAY "|=================================================|"
+           DISPLAY "EMPLOYEE NAME: " EMP-NAME
            DISPLAY "|=================================================|"
            DISPLAY "BASIC PAY: " BASIC-SALARY
            DISPLAY "|=================================================|"
@@ -483,9 +563,13 @@
            DISPLAY "               NET PAY: " FD-NETPAY
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"
-           END-READ.
-           CLOSE PAYSLIP-FILE.
-       STOP RUN.
+           CLOSE PAYSLIP-FILE 
 
-       
+           DISPLAY "[DO YOU WANT TO VIEW ANOTHER RECORD]? (Y/N):" 
+        NO ADVANCING
+        ACCEPT WS-CHOICE
+        IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
+            PERFORM GENERATESLIP
+        ELSE
+            PERFORM MAIN-MENU
         STOP RUN.
