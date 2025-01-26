@@ -474,6 +474,61 @@
 
         ATTENDANCE.
         CALL "SYSTEM" USING BY REFERENCE ATT-REC.
+
+           PERFORM CLEAR-SCREEN
+           PERFORM UNTIL CHOICE = 4
+           DISPLAY "==================================================="
+           DISPLAY "|||||||||||          ATTENDANCE MENU        |||||||"
+           DISPLAY "|||||||||||===============================|||||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [1] - TIME IN                    |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [2] - TIME OUT                   |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [3] - VIEW ATTENDANCE LOGS       |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||       [4] - BACK                       |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "[CHOOSE AN OPTION]: " WITH NO ADVANCING
+           ACCEPT CHOICE
+
+               EVALUATE CHOICE
+                   WHEN 1
+                       PERFORM TIME-IN
+                   WHEN 2
+                       PERFORM TIME-OUT
+                   WHEN 3
+                       PERFORM VIEW-ATTENDANCE
+                   WHEN 4
+                       PERFORM MAIN-PARA
+                   WHEN OTHER
+                       DISPLAY "INVALID OPTION, PLEASE TRY AGAIN."
+               END-EVALUATE
+           END-PERFORM
+           STOP RUN.
+
+       TIME-IN.
+           DISPLAY "ENTER EMPLOYEE ID FOR TIME-IN: " WITH NO ADVANCING
+           ACCEPT USER-ID
+           PERFORM CLEAR-SCREEN
+           DISPLAY "TIME-IN SUCCESSFUL FOR EMPLOYEE ID: " USER-ID
+           DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
+           ACCEPT OMITTED.
+
+       TIME-OUT.
+           DISPLAY "ENTER EMPLOYEE ID FOR TIME-OUT: " WITH NO ADVANCING
+           ACCEPT USER-ID
+           PERFORM CLEAR-SCREEN
+           DISPLAY "TIME-OUT SUCCESSFUL FOR EMPLOYEE ID: " USER-ID
+           DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
+           ACCEPT OMITTED.
+
+       VIEW-ATTENDANCE.
+           DISPLAY "VIEWING ATTENDANCE LOGS..."
+           DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
+           ACCEPT OMITTED.
         STOP RUN.
 
         PAYSLIP.
@@ -483,6 +538,7 @@
 
        CLEAR-SCREEN.
            CALL 'SYSTEM' USING 'clear'.
+       
 
        
 
