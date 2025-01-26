@@ -29,7 +29,6 @@
        01 WS-OPEN PIC X.
        01 WS-INPUT-PASSWORD PIC X(30).
        01 ATT-REC PIC X(100) VALUE "python3 Attendance.py".
-       01 CALLED PIC X(100) VALUE "python3 Call.py".
        01 WS-NEW-VALUE PIC X(40).
        01 WS-DELETE-CONFIRM PIC X.
 
@@ -38,6 +37,7 @@
        MAIN-PARA.
         PERFORM CLEAR-SCREEN
         PERFORM UNTIL CHOICE = 5
+        GOBACK
            DISPLAY "==================================================="
            DISPLAY "|||||||||||===============================|||||||||" 
            DISPLAY "|||||||||| $ EMPLOYEE RECORD MANAGEMENT $  ||||||||"
@@ -76,7 +76,7 @@
         WHEN 4
             PERFORM PAYSLIP
         WHEN 5
-            PERFORM CALLER
+            CALL "SYSTEM" USING BY REFERENCE "python3 Call.py"
         END-PERFORM   
         STOP RUN.
 
@@ -298,10 +298,6 @@
         PAYSLIP.
         DISPLAY "1 - GENERATE PAYSLIP"
         DISPLAY "2 - BACK"
-        STOP RUN.
-
-        CALLER.
-        CALL "SYSTEM" USING BY REFERENCE CALLED
         STOP RUN.
 
        CLEAR-SCREEN.

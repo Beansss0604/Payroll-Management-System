@@ -81,7 +81,6 @@
            END-PERFORM
            STOP RUN.
       
-
        USER-REGISTER.
            PERFORM CLEAR-SCREEN
            OPEN I-O USER-FILE
@@ -155,8 +154,8 @@
            STOP RUN.
 
        USER-LOGIN.
-       OPEN I-O USER-FILE 
-       PERFORM CLEAR-SCREEN
+           OPEN I-O USER-FILE 
+           PERFORM CLEAR-SCREEN
            DISPLAY "|=================================================|"
            DISPLAY "||||||||||||||||===================||||||||||||||||"
            DISPLAY "|||||||||||||||    [2] - LOGIN      |||||||||||||||"
@@ -166,6 +165,11 @@
            ACCEPT USER-ID
 
            READ USER-FILE KEY IS USER-ID
+           IF USER-ID = "admin"
+               PERFORM ADMIN
+           END-IF
+
+           READ USER-FILE KEY IS USER-ID
            INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||=============================================|||"
@@ -173,7 +177,7 @@
            DISPLAY "             PLEASE REGISTER FIRST!"
            DISPLAY "|||=============================================|||"
            DISPLAY "|=================================================|"   
-          DISPLAY "[DO YOU WANT TO CONTINUE? (Y/N)]: " WITH NO ADVANCING
+           DISPLAY "[DO YOU WANT TO CONTINUE? (Y/N)]: " NO ADVANCING
            ACCEPT WS-OPEN
               IF WS-OPEN = "Y" OR "y"
                     CLOSE USER-FILE
@@ -243,23 +247,44 @@
            DISPLAY "[CHOOSE AN OPTION]: " WITH NO ADVANCING           
            ACCEPT CHOICE
 
-        EVALUATE CHOICE
-        WHEN 1
-            PERFORM EDIT-DELETE
-        WHEN 2
-            PERFORM RECORD-FILE
-        WHEN 3
-            PERFORM ATTENDANCE
-        WHEN 4
-            PERFORM PAYSLIP
-        WHEN 5
-            PERFORM MAIN-MENU
-
-        END-PERFORM   
+           EVALUATE CHOICE
+               WHEN 1
+                   PERFORM EDIT-DELETE
+               WHEN 2
+                   PERFORM RECORD-FILE
+               WHEN 3
+                   PERFORM ATTENDANCE
+               WHEN 4
+                   PERFORM PAYSLIP
+               WHEN 5
+                   PERFORM MAIN-MENU
+               WHEN OTHER 
+                   DISPLAY "INVALID OPTION"
+                   ACCEPT omitted
+           END-EVALUATE
+           END-PERFORM   
         STOP RUN.
 
+       ADMIN.
+       DISPLAY "==================================================="        
+           DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
+               ACCEPT WS-INPUT-PASSWORD
+               IF WS-INPUT-PASSWORD = USER-PASSWORD
+           PERFORM CLEAR-SCREEN
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "   LOGIN SUCCESSFUL! WELCOME " EMPLOYEE-NAME     
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"
+              DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
+              ACCEPT OMITTED   
+              CLOSE USER-FILE
+           CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+           STOP RUN.
+
         EDIT-DELETE.
-        PERFORM CLEAR-SCREEN
+           PERFORM CLEAR-SCREEN
+           PERFORM UNTIL CHOICE = 3
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"     
            DISPLAY "|||||      EDIT/DELETE EMPLOYEE RECORD        |||||"
@@ -280,16 +305,21 @@
            DISPLAY "[CHOOSE AN OPTION]: " WITH NO ADVANCING            
            ACCEPT CHOICE
         
-        EVALUATE CHOICE
-        WHEN 1
-            PERFORM EDIT-RECORD
-        WHEN 2
-            PERFORM DELETE-RECORD
-        WHEN 3
-            PERFORM MAIN-PARA
-        STOP RUN. 
+           EVALUATE CHOICE
+               WHEN 1
+                   PERFORM EDIT-RECORD
+               WHEN 2
+                   PERFORM DELETE-RECORD
+               WHEN 3
+                   PERFORM MAIN-PARA
+               WHEN OTHER 
+                   DISPLAY "INVALID OPTION"
+                   ACCEPT OMITTED
+           END-EVALUATE
+           END-PERFORM
+           STOP RUN. 
 
-        EDIT-RECORD.
+       EDIT-RECORD.
            PERFORM CLEAR-SCREEN
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"     
@@ -553,19 +583,6 @@
            END-READ.
            CLOSE USER-FILE.
 
-      * VIEW-RECORD.
-      * DISPLAY "1 - VIEW EMPLOYEE RECORD"
-      * DISPLAY "2 - VIEW ATTENDANCE RECORD"
-      * DISPLAY "3 - BACK"
-      * ACCEPT CHOICE
-        
-      * EVALUATE CHOICE
-      * WHEN 1
-      *     PERFORM RECORD-FILE
-      * WHEN 3
-      *     PERFORM MAIN-PARA
-      * STOP RUN. 
-
        RECORD-FILE.
            PERFORM CLEAR-SCREEN
            DISPLAY "|=================================================|"
@@ -574,8 +591,8 @@
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "[ENTER YOUR USERNAME]: " WITH NO ADVANCING
-       ACCEPT USER-ID 
-       OPEN I-O USER-FILE.
+           ACCEPT USER-ID 
+           OPEN I-O USER-FILE.
            READ USER-FILE KEY IS USER-ID
                INVALID KEY
            DISPLAY "|=================================================|"
@@ -626,9 +643,7 @@
            STOP RUN.
 
         ATTENDANCE.
-        CALL "SYSTEM" USING BY REFERENCE ATT-REC.
-
-          
+           CALL "SYSTEM" USING BY REFERENCE ATT-REC.
 
         PAYSLIP.
            DISPLAY "|=================================================|"
@@ -636,15 +651,7 @@
            DISPLAY "|||||       [4] - GENERATE PAYSLIP            |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
-        STOP RUN.
+           STOP RUN.
 
        CLEAR-SCREEN.
            CALL 'SYSTEM' USING 'clear'.
-       
-
-       
-
-      
-
-
-        

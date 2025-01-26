@@ -1,6 +1,5 @@
 import subprocess
 
-
 def main_menu():
     subprocess.run(['./Admin'])
 

@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 import subprocess
 import os
+import sys
 
 connection = sqlite3.connect("Attendance.db")
 cursor = connection.cursor()
@@ -266,6 +267,7 @@ def leave_application():
 
 def cobol_back():
     subprocess.run(['./Subprog'])
+    sys.exit()
 
 def main_menu():
     while True:
@@ -306,7 +308,6 @@ def main_menu():
             continue
 
         
-        
         # Evaluate user's choice
         if choice == 1:
             time_in()
@@ -322,6 +323,7 @@ def main_menu():
             input("Press Enter to return to the main menu...")
         elif choice == 5:
             cobol_back()
+            break
         else:
             print("Invalid choice. Please select a valid option (1-5).\n")
 
