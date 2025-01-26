@@ -21,174 +21,6 @@ def is_valid_date(date_string):
     except ValueError:
         return False
 
-def fetch_mainmenu():
-    while True:
-        clear_screen()
-
-        print("===================================================")
-        print("|||||||||||||=========================|||||||||||||")
-        print("||||||||||||||      FETCH RECORDS    ||||||||||||||")
-        print("|||||||||||||=========================|||||||||||||")
-        print("===================================================")
-        print("|||||||||||=============================|||||||||||")
-        print("||||||||||  [1] - REGULAR ATTENDANCE     ||||||||||")
-        print("|||||||||||=============================|||||||||||")
-        print("===================================================")
-        print("|||||||||||=============================|||||||||||")
-        print("||||||||||  [2] - HOLIDAY ATTENDANCE     ||||||||||")
-        print("|||||||||||=============================|||||||||||")
-        print("===================================================")
-        print("|||||||||||==============================||||||||||")
-        print("||||||||||    [3] - LEAVE RECORD          |||||||||")
-        print("|||||||||||==============================||||||||||")
-        print("===================================================")
-        print("|||||||||||==============================||||||||||")
-        print("||||||||||    [4] - BACK TO MAIN MENU     |||||||||")
-        print("|||||||||||==============================||||||||||")
-        print("===================================================")
-
-        try:
-            choice = int(input("[CHOOSE AN OPTION]: "))
-        except ValueError:
-            print("Invalid input. Please enter a number between 1 and 4.\n")
-            input("Press Enter to continue...")
-            continue
-
-      
-        if choice == 1:
-            fetch_reg()
-            input("Press Enter to return to the record menu...")
-        elif choice == 2:
-            fetch_holi()
-            input("Press Enter to return to the record menu...")
-        elif choice == 3:
-            fetch_leave()
-            input("Press Enter to return to the record menu...")
-        elif choice == 4:
-            print("Returning to the main menu.\n")
-            break
-        else:
-            print("Invalid choice. Please select a valid option (1-4).\n")
-            input("Press Enter to continue...")
-
-def fetch_leave():
-    clear_screen()
-
-    print("===================================================")
-    print("|||||||||||==============================||||||||||")
-    print("||||||||||       [3] - LEAVE RECORD       |||||||||")
-    print("|||||||||||==============================||||||||||")
-    print("===================================================")
-    username = input("Enter the username to search: ")
-    print("===================================================")
-
-    try:
-        cursor.execute("SELECT * FROM Leave WHERE Username = ?", (username,))
-
-        rows = cursor.fetchall()
-
-        row_count = 0
-
-        if rows:
-            print(f"\nRecords found for username '{username}':")
-            print("===================================================")
-            print(f"\nUsername |  Type  |  Date")
-
-            for row in rows:
-                row_count += 1
-
-                print(f"{row[0]}  , {row[1]} , {row[2]}")
-
-            print(f"\nTotal days: {row_count}")
-            print("===================================================")
-            print (" ")
-
-    except sqlite3.Error as e:
-        print(f"Error fetching records for '{username}': {e}")
-        print("Failed to fetch records.")
-
-
-def fetch_holi():
-    clear_screen()
-
-    print("===================================================")
-    print("|||||||||||==============================||||||||||")
-    print("||||||||||   [2] - HOLIDAY ATTENDANCE     |||||||||")
-    print("|||||||||||==============================||||||||||")
-    print("===================================================")
-    username = input("Enter the username to search: ")
-    print("===================================================")
-
-    try:
-        cursor.execute("SELECT * FROM Holiday WHERE Username = ?", (username,))
-
-        rows = cursor.fetchall()
-
-        row_count = 0
-        if rows:
-            print(f"\nRecords found for username '{username}':")
-            print("===================================================")
-            print(f"\nUsername |  Date   |  Time-in  | Time-out")
-
-            for row in rows:
-                row_count += 1
-
-                print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]}")
-                print("===================================================")
-
-            print(f"\nTotal days: {row_count}")
-            print("===================================================")
-            print (" ")
-
-    except sqlite3.Error as e:
-        print(f"Error fetching records for '{username}': {e}")
-        print("Failed to fetch records.")
-
-def fetch_reg():
-    clear_screen()
-
-    print("===================================================")
-    print("|||||||||||==============================||||||||||")
-    print("||||||||||    [1] - REGULAR ATTENDANCE    |||||||||")
-    print("|||||||||||==============================||||||||||")
-    print("===================================================")
-    username = input("Enter the username to search: ")
-    print("===================================================")
-
-    try:
-        cursor.execute("SELECT * FROM Attendance WHERE Username = ?", (username,))
-
-        rows = cursor.fetchall()
-
-        row_count = 0
-        total_overtime = 0
-
-        if rows:
-            print(f"\nRecords found for username '{username}':")
-            print("===================================================")
-            print(f"\nUsername |  Date   |  Time-in  | Time-out | Overtime")
-
-            for row in rows:
-                row_count += 1
-
-                overtime_value = row[4] if row[4] is not None else 0  
-                if isinstance(overtime_value, (int, float)): 
-                    total_overtime += overtime_value
-                else:
-                    print(f"Invalid overtime value found for record {row[0]}: {overtime_value}")
-
-                print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]} , {overtime_value}")
-            print("===================================================")
-            print(f"\nTotal days: {row_count}")
-            print("===================================================")
-            print(f"Total Overtime: {total_overtime}")
-            print (" ")
-            print (" ")
-
-    except sqlite3.Error as e:
-        print(f"Error fetching records for '{username}': {e}")
-        print("Failed to fetch records.")
-
 def time_in():
     clear_screen()
 
@@ -227,28 +59,45 @@ def time_out():
     print("|||||||||||==============================||||||||||")
     print("===================================================")
     username = input("Enter Username: ")
-    print (" ")
+    print(" ")
     
     try:
+        # Check if Time-in exists for the user on the current date
         cursor.execute('''
-            INSERT INTO Attendance (Username, Date, "Time-out")
-            VALUES (?, ?, ?)
-            ON CONFLICT(Username, Date) 
-            DO UPDATE SET "Time-out" = excluded."Time-out"
-        ''', (username, timestamp, time))
+            SELECT "Time-in" 
+            FROM Attendance 
+            WHERE Username = ? AND Date = ?
+        ''', (username, timestamp))
         
-        connection.commit()
-        print ("|=================================================|")
-        print ("|||||||||====================================||||||")    
-        print ("||||||||    TIME OUT RECORDED SUCCESSFULLY!   |||||")
-        print ("|||||||||====================================||||||")
-        print ("|=================================================|")
+        record = cursor.fetchone()
+        
+        if record and record[0] is not None:  # Ensure Time-in exists and is not null
+            cursor.execute('''
+                INSERT INTO Attendance (Username, Date, "Time-out")
+                VALUES (?, ?, ?)
+                ON CONFLICT(Username, Date) 
+                DO UPDATE SET "Time-out" = excluded."Time-out"
+            ''', (username, timestamp, time))
+            
+            connection.commit()
+            print("|=================================================|")
+            print("|||||||||====================================||||||")    
+            print("||||||||    TIME OUT RECORDED SUCCESSFULLY!   |||||")
+            print("|||||||||====================================||||||")
+            print("|=================================================|")
+        else:
+            print("|=================================================|")
+            print("|||||||||====================================||||||")    
+            print("||||||||   NO TIME-IN FOUND! TIME-OUT FAILED.  ||||")
+            print("|||||||||====================================||||||")
+            print("|=================================================|")
     except sqlite3.Error as e:
-        print ("|=================================================|")
-        print ("|||||||||====================================||||||")    
-        print ("||||||||       FAILED TO RECORD TIME OUT!     |||||")
-        print ("|||||||||====================================||||||")
-        print ("|=================================================|")
+        print("|=================================================|")
+        print("|||||||||====================================||||||")    
+        print("||||||||       FAILED TO RECORD TIME OUT!     |||||")
+        print("|||||||||====================================||||||")
+        print("|=================================================|")
+
 
 
 def holi_timein():
@@ -288,30 +137,46 @@ def holi_timeout():
     print("||||||||||        [2] - TIME OUT          |||||||||")
     print("|||||||||||==============================||||||||||")
     print("===================================================")
-    username = input("Enter the username to search: ")
-    print("===================================================")
+    username = input("Enter Username: ")
+    print(" ")
     
     try:
+        # Check if Time-in exists for the user on the current date
         cursor.execute('''
-            INSERT INTO Holiday (Username, Date, "Time-out")
-            VALUES (?, ?, ?)
-            ON CONFLICT(Username, Date) 
-            DO UPDATE SET "Time-out" = excluded."Time-out"
-        ''', (username, timestamp, time))
+            SELECT "Time-in" 
+            FROM Holiday 
+            WHERE Username = ? AND Date = ?
+        ''', (username, timestamp))
         
-        connection.commit()
-        print ("|=================================================|")
-        print ("|||||||||====================================||||||")    
-        print ("||||||||    TIME OUT RECORDED SUCCESSFULLY!   |||||")
-        print ("|||||||||====================================||||||")
-        print ("|=================================================|")
+        record = cursor.fetchone()
+        
+        if record and record[0] is not None:  # Ensure Time-in exists and is not null
+            cursor.execute('''
+                INSERT INTO Holiday (Username, Date, "Time-out")
+                VALUES (?, ?, ?)
+                ON CONFLICT(Username, Date) 
+                DO UPDATE SET "Time-out" = excluded."Time-out"
+            ''', (username, timestamp, time))
+            
+            connection.commit()
+            print("|=================================================|")
+            print("|||||||||====================================||||||")    
+            print("||||||||    TIME OUT RECORDED SUCCESSFULLY!   |||||")
+            print("|||||||||====================================||||||")
+            print("|=================================================|")
+        else:
+            print("|=================================================|")
+            print("|||||||||====================================||||||")    
+            print("||||||||   NO TIME-IN FOUND! TIME-OUT FAILED.  ||||")
+            print("|||||||||====================================||||||")
+            print("|=================================================|")
     except sqlite3.Error as e:
-        print ("|=================================================|")
-        print ("|||||||||====================================||||||")    
-        print ("||||||||       FAILED TO RECORD TIMEOUT!      |||||")
-        print ("|||||||||====================================||||||")
-        print ("|=================================================|")
-        input("Press Enter to return to the main menu...")
+        print("|=================================================|")
+        print("|||||||||====================================||||||")    
+        print("||||||||       FAILED TO RECORD TIME OUT!     |||||")
+        print("|||||||||====================================||||||")
+        print("|=================================================|")
+
 
 def holiday_mainmenu():
     while True:
@@ -429,18 +294,14 @@ def main_menu():
         print("|||||||||||==============================||||||||||")
         print("===================================================")
         print("|||||||||||==============================||||||||||")
-        print("||||||||||    [5] - FETCH RECORDS         |||||||||")
-        print("|||||||||||==============================||||||||||")
-        print("===================================================")
-        print("|||||||||||==============================||||||||||")
-        print("||||||||||    [6] - BACK TO MAIN MENU     |||||||||")
+        print("||||||||||    [5] - BACK TO MAIN MENU     |||||||||")
         print("|||||||||||==============================||||||||||")
         print("===================================================")
         # Accept user's choice
         try:
             choice = int(input("[CHOOSE AN OPTION]: "))
         except ValueError:
-            print("Invalid input. Please enter a number between 1 and 6.\n")
+            print("Invalid input. Please enter a number between 1 and 5.\n")
             input("Press Enter to continue...")
             continue
 
@@ -460,12 +321,9 @@ def main_menu():
             leave_application()
             input("Press Enter to return to the main menu...")
         elif choice == 5:
-            fetch_mainmenu()
-            input("Press Enter to return to the main menu...")
-        elif choice == 6:
             cobol_back()
         else:
-            print("Invalid choice. Please select a valid option (1-6).\n")
+            print("Invalid choice. Please select a valid option (1-5).\n")
 
 # Run the program
 if __name__ == "__main__":
