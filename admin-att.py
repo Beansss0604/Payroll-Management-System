@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 import subprocess
+import os
 
 connection = sqlite3.connect("Attendance.db")
 cursor = connection.cursor()
@@ -8,34 +9,68 @@ cursor = connection.cursor()
 timestamp = datetime.now().strftime("%Y-%m-%d")
 time = datetime.now().strftime("%H:%M:%S")
 
+def clear_screen():
+    """Clears the terminal screen."""
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 def fetch_mainmenu():
     while True:
-        print("\nRECORD MAIN MENU")
-        print("1 - REGULAR ATTENDANCE RECORD")
-        print("2 - HOLIDAY ATTENDANCE RECORD")
-        print("3 - LEAVE RECORD")
-        print("4 - BACK TO MAIN MENU")
+        clear_screen()
+        
+        print("===================================================")
+        print("|||||||||||||=========================|||||||||||||")
+        print("||||||||||||||      FETCH RECORDS    ||||||||||||||")
+        print("|||||||||||||=========================|||||||||||||")
+        print("===================================================")
+        print("|||||||||||=============================|||||||||||")
+        print("||||||||||  [1] - REGULAR ATTENDANCE     ||||||||||")
+        print("|||||||||||=============================|||||||||||")
+        print("===================================================")
+        print("|||||||||||=============================|||||||||||")
+        print("||||||||||  [2] - HOLIDAY ATTENDANCE     ||||||||||")
+        print("|||||||||||=============================|||||||||||")
+        print("===================================================")
+        print("|||||||||||==============================||||||||||")
+        print("||||||||||    [3] - LEAVE RECORD          |||||||||")
+        print("|||||||||||==============================||||||||||")
+        print("===================================================")
+        print("|||||||||||==============================||||||||||")
+        print("||||||||||    [4] - BACK TO MAIN MENU     |||||||||")
+        print("|||||||||||==============================||||||||||")
+        print("===================================================")
 
         try:
-            choice = int(input("Enter your choice (1-4): "))
+            choice = int(input("[CHOOSE AN OPTION]: "))
         except ValueError:
             print("Invalid input. Please enter a number between 1 and 4.\n")
             continue
 
         if choice == 1:
             fetch_reg()
+            input("Press Enter to return to the record menu...")
         elif choice == 2:
             fetch_holi()  
+            input("Press Enter to return to the record menu...")
         elif choice == 3:
             fetch_leave()
+            input("Press Enter to return to the record menu...")
         elif choice == 4:
             print("Returning to the main menu.\n")
             break
         else:
             print("Invalid choice. Please select a valid option (1-4).\n")
+            input("Press Enter to continue...")
 
 def fetch_leave():
-    username = input("Enter the username to search: ")
+    clear_screen()
+
+    print("===================================================")
+    print("|||||||||||==============================||||||||||")
+    print("||||||||||       [3] - LEAVE RECORD       |||||||||")
+    print("|||||||||||==============================||||||||||")
+    print("===================================================")
+    username = input("Enter the employee's name to search: ")
+    print("===================================================")
 
     try:
         cursor.execute("SELECT * FROM Leave WHERE Username = ?", (username,))
@@ -46,6 +81,7 @@ def fetch_leave():
 
         if rows:
             print(f"\nRecords found for username '{username}':")
+            print("===================================================")
             print(f"\nUsername |  Type  |  Date")
 
             for row in rows:
@@ -53,7 +89,9 @@ def fetch_leave():
 
                 print(f"{row[0]}  , {row[1]} , {row[2]}")
 
-            print(f"\nTotal rows fetched: {row_count}")
+            print(f"\nTotal days: {row_count}")
+            print("===================================================")
+            print (" ")
 
     except sqlite3.Error as e:
         print(f"Error fetching records for '{username}': {e}")
@@ -61,7 +99,15 @@ def fetch_leave():
 
 
 def fetch_holi():
-    username = input("Enter the username to search: ")
+    clear_screen()
+
+    print("===================================================")
+    print("|||||||||||==============================||||||||||")
+    print("||||||||||   [2] - HOLIDAY ATTENDANCE     |||||||||")
+    print("|||||||||||==============================||||||||||")
+    print("===================================================")
+    username = input("Enter the employee's name to search: ")
+    print("===================================================")
 
     try:
         cursor.execute("SELECT * FROM Holiday WHERE Username = ?", (username,))
@@ -71,21 +117,33 @@ def fetch_holi():
         row_count = 0
         if rows:
             print(f"\nRecords found for username '{username}':")
+            print("===================================================")
             print(f"\nUsername |  Date   |  Time-in  | Time-out")
 
             for row in rows:
                 row_count += 1
 
                 print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]}")
+                print("===================================================")
 
-            print(f"\nTotal rows fetched: {row_count}")
+            print(f"\nTotal days: {row_count}")
+            print("===================================================")
+            print (" ")
 
     except sqlite3.Error as e:
         print(f"Error fetching records for '{username}': {e}")
         print("Failed to fetch records.")
 
 def fetch_reg():
-    username = input("Enter the username to search: ")
+    clear_screen()
+
+    print("===================================================")
+    print("|||||||||||==============================||||||||||")
+    print("||||||||||    [1] - REGULAR ATTENDANCE    |||||||||")
+    print("|||||||||||==============================||||||||||")
+    print("===================================================")
+    username = input("Enter the employee's name to search: ")
+    print("===================================================")
 
     try:
         cursor.execute("SELECT * FROM Attendance WHERE Username = ?", (username,))
@@ -97,6 +155,7 @@ def fetch_reg():
 
         if rows:
             print(f"\nRecords found for username '{username}':")
+            print("===================================================")
             print(f"\nUsername |  Date   |  Time-in  | Time-out | Overtime")
 
             for row in rows:
@@ -110,8 +169,12 @@ def fetch_reg():
 
                 print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]} , {overtime_value}")
 
-            print(f"\nTotal rows fetched: {row_count}")
+            print("===================================================")
+            print(f"\nTotal days: {row_count}")
+            print("===================================================")
             print(f"Total Overtime: {total_overtime}")
+            print (" ")
+            print (" ")
 
     except sqlite3.Error as e:
         print(f"Error fetching records for '{username}': {e}")
@@ -122,14 +185,25 @@ def cobol_back():
 
 def main_menu():
     while True:
+        clear_screen()
         # Display menu options
-        print("\nATTENDANCE MENU")
-        print("1 - FETCH RECORDS")
-        print("2 - RETURN TO MAIN MANU")
+        print("===================================================")
+        print("|||||||||||||||=======================|||||||||||||")
+        print("||||||||||||||     ATTENDANCE MENU     ||||||||||||")
+        print("|||||||||||||||=======================|||||||||||||")
+        print("===================================================")
+        print("|||||||||||||||||===================|||||||||||||||")
+        print("|||||||||||    [1] - FETCH RECORDS      |||||||||||")
+        print("|||||||||||||||||===================|||||||||||||||")
+        print("===================================================")
+        print("|||||||||||==============================||||||||||")
+        print("||||||||||    [2] - BACK TO MAIN MENU     |||||||||")
+        print("|||||||||||==============================||||||||||")
+        print("===================================================")
 
         # Accept user's choice
         try:
-            choice = int(input("Enter your choice (1-2): "))
+            choice = int(input("[CHOOSE AN OPTION]: "))
         except ValueError:
             print("Invalid input. Please enter a number between 1 and 2.\n")
             continue
