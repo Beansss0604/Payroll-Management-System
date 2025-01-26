@@ -139,7 +139,7 @@
               CLOSE USER-FILE
            DISPLAY "|=================================================|"
            DISPLAY "|||||||||====================================||||||"     
-           DISPLAY "||||||||  USERNAME RESGISTERED SUCCESSFULLY!  |||||"
+           DISPLAY "||||||||  USERNAME REGISTERED SUCCESSFULLY!  |||||"
            DISPLAY "|||||||||====================================||||||"
            DISPLAY "|=================================================|"
            PERFORM MAIN-MENU
@@ -173,7 +173,7 @@
                     CLOSE USER-FILE
                     PERFORM MAIN-MENU
            NOT INVALID KEY
-           DISPLAY "==================================================="          
+           DISPLAY "==================================================="        
            DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
                ACCEPT WS-INPUT-PASSWORD
                IF WS-INPUT-PASSWORD = USER-PASSWORD
@@ -321,7 +321,7 @@
            WITH NO ADVANCING
            ACCEPT WS-NEW-VALUE
            IF WS-NEW-VALUE NOT = SPACES THEN
-               MOVE WS-NEW-VALUE TO EMPLOYEE-NATIONALITY
+                MOVE WS-NEW-VALUE TO EMPLOYEE-NATIONALITY
            END-IF
 
            DISPLAY "CURRENT EMAIL: " EMPLOYEE-EMAIL
@@ -483,6 +483,8 @@
 
        CLEAR-SCREEN.
            CALL 'SYSTEM' USING 'clear'.
+
+       
 
       
 
