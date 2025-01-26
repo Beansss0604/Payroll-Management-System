@@ -75,7 +75,7 @@
         WHEN 4
             PERFORM PAYSLIP
         WHEN 5
-            CALL 'AUTHENTICATION'
+            CALL 'main'
 
         END-PERFORM   
         STOP RUN.
