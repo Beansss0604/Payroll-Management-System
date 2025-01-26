@@ -156,8 +156,18 @@
            DISPLAY "[ENTER USERNAME]: " NO ADVANCING
            ACCEPT USER-ID
 
+           READ USER-FILE KEY IS USER-ID
            IF USER-ID = "admin"
-               CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+           PERFORM CLEAR-SCREEN
+           DISPLAY "|=================================================|"
+           DISPLAY "|||=============================================|||"
+           DISPLAY "     LOGIN SUCCESSFUL! WELCOME " USER-ID     
+           DISPLAY "|||=============================================|||"
+           DISPLAY "|=================================================|"
+              DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
+              ACCEPT OMITTED   
+               CLOSE USER-FILE
+               PERFORM ADMIN
            END-IF
 
            READ USER-FILE KEY IS USER-ID
@@ -252,6 +262,10 @@
 
         END-PERFORM   
         STOP RUN.
+
+       ADMIN.
+       CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+       STOP RUN.
 
         EDIT-DELETE.
         DISPLAY "1 - EDIT EMPLOYEE RECORD"

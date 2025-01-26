@@ -28,10 +28,9 @@
         WORKING-STORAGE SECTION.
         01 File-Status PIC XX.
             88 File-OK VALUE "00".
-            88 File-End VALUE "46".
+            88 File-End VALUE "10".
         01 Start-Key PIC X(30) VALUE SPACES.
         01 CHOICE PIC 9.
-        01 CALLED PIC X(100) VALUE "python3 admin-att.py".
         01 WS-CHOICE PIC A(1).
 
         PROCEDURE DIVISION.
@@ -51,7 +50,7 @@
                 WHEN 3
                     PERFORM PROCESS-PAYSLIP
                 WHEN 4
-                    PERFORM LOGIN
+                    PERFORM BACK
                 WHEN OTHER
                     DISPLAY "INVALID CHOICE"
                     PERFORM MAIN-MENU
@@ -106,13 +105,17 @@
         STOP RUN.
 
         VIEW-ATTENDANCE.
-        CALL "SYSTEM" USING BY REFERENCE CALLED
+        CALL "SYSTEM" USING BY REFERENCE "python3 admin-att.py"
         STOP RUN.
 
         PROCESS-PAYSLIP.
-
+        DISPLAY "PROCESSING PAYSLIP"
+        DISPLAY "1. ADDITION IN SALARY"
+        DISPLAY "2. DEDUCTION IN SALARY"
+        DISPLAY "3. BACK"
             STOP RUN.
 
-        LOGIN.
-
-            STOP RUN.
+        BACK.
+        CALL "SYSTEM" USING BY REFERENCE "python3 Call.py"
+        STOP RUN.
+        
