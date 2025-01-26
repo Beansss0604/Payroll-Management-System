@@ -63,7 +63,7 @@
                    PERFORM USER-LOGIN
                WHEN 3
                    DISPLAY "THANK YOU FOR USING THE SYSTEM!"
-                   STOP RUN
+                   stop run
                WHEN OTHER
                   DISPLAY "INVALID OPTION"
                   DISPLAY 'PRESS ENTER TO CONTINUE...' WITH NO ADVANCING
@@ -155,6 +155,10 @@
            DISPLAY "|=================================================|"
            DISPLAY "[ENTER USERNAME]: " NO ADVANCING
            ACCEPT USER-ID
+
+           IF USER-ID = "admin"
+               CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+           END-IF
 
            READ USER-FILE KEY IS USER-ID
            INVALID KEY
@@ -432,19 +436,6 @@
            END-READ.
            CLOSE USER-FILE.
 
-      * VIEW-RECORD.
-      * DISPLAY "1 - VIEW EMPLOYEE RECORD"
-      * DISPLAY "2 - VIEW ATTENDANCE RECORD"
-      * DISPLAY "3 - BACK"
-      * ACCEPT CHOICE
-        
-      * EVALUATE CHOICE
-      * WHEN 1
-      *     PERFORM RECORD-FILE
-      * WHEN 3
-      *     PERFORM MAIN-PARA
-      * STOP RUN. 
-
        RECORD-FILE.
        DISPLAY "ENTER YOUR USERNAME: " WITH NO ADVANCING
        ACCEPT USER-ID 
@@ -473,66 +464,11 @@
            STOP RUN.
 
         ATTENDANCE.
-        CALL "SYSTEM" USING BY REFERENCE ATT-REC.
-
-           PERFORM CLEAR-SCREEN
-           PERFORM UNTIL CHOICE = 4
-           DISPLAY "==================================================="
-           DISPLAY "|||||||||||          ATTENDANCE MENU        |||||||"
-           DISPLAY "|||||||||||===============================|||||||||"
-           DISPLAY "|=================================================|"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||       [1] - TIME IN                    |||||"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||       [2] - TIME OUT                   |||||"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||       [3] - VIEW ATTENDANCE LOGS       |||||"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||       [4] - BACK                       |||||"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|=================================================|"
-           DISPLAY "[CHOOSE AN OPTION]: " WITH NO ADVANCING
-           ACCEPT CHOICE
-
-               EVALUATE CHOICE
-                   WHEN 1
-                       PERFORM TIME-IN
-                   WHEN 2
-                       PERFORM TIME-OUT
-                   WHEN 3
-                       PERFORM VIEW-ATTENDANCE
-                   WHEN 4
-                       PERFORM MAIN-PARA
-                   WHEN OTHER
-                       DISPLAY "INVALID OPTION, PLEASE TRY AGAIN."
-               END-EVALUATE
-           END-PERFORM
-           STOP RUN.
-
-       TIME-IN.
-           DISPLAY "ENTER EMPLOYEE ID FOR TIME-IN: " WITH NO ADVANCING
-           ACCEPT USER-ID
-           PERFORM CLEAR-SCREEN
-           DISPLAY "TIME-IN SUCCESSFUL FOR EMPLOYEE ID: " USER-ID
-           DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
-           ACCEPT OMITTED.
-
-       TIME-OUT.
-           DISPLAY "ENTER EMPLOYEE ID FOR TIME-OUT: " WITH NO ADVANCING
-           ACCEPT USER-ID
-           PERFORM CLEAR-SCREEN
-           DISPLAY "TIME-OUT SUCCESSFUL FOR EMPLOYEE ID: " USER-ID
-           DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
-           ACCEPT OMITTED.
-
-       VIEW-ATTENDANCE.
-           DISPLAY "VIEWING ATTENDANCE LOGS..."
-           DISPLAY "PRESS ENTER TO CONTINUE..." WITH NO ADVANCING
-           ACCEPT OMITTED.
+        CALL "SYSTEM" USING BY REFERENCE ATT-REC
         STOP RUN.
 
         PAYSLIP.
-        DISPLAY "1 - GENERATE PAYSLIP"
+        DISPLAY "1 - PAYSLIP"
         DISPLAY "2 - BACK"
         STOP RUN.
 

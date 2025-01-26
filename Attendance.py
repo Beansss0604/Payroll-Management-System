@@ -1,121 +1,13 @@
 import sqlite3
 from datetime import datetime
 import subprocess
+import os
 
 connection = sqlite3.connect("Attendance.db")
 cursor = connection.cursor()
 
 timestamp = datetime.now().strftime("%Y-%m-%d")
 time = datetime.now().strftime("%H:%M:%S")
-
-def fetch_mainmenu():
-    while True:
-        print("\nRECORD MAIN MENU")
-        print("1 - REGULAR ATTENDANCE RECORD")
-        print("2 - HOLIDAY ATTENDANCE RECORD")
-        print("3 - LEAVE RECORD")
-        print("4 - BACK TO MAIN MENU")
-
-        try:
-            choice = int(input("Enter your choice (1-4): "))
-        except ValueError:
-            print("Invalid input. Please enter a number between 1 and 4.\n")
-            continue
-
-        if choice == 1:
-            fetch_reg()
-        elif choice == 2:
-            fetch_holi()  
-        elif choice == 3:
-            fetch_leave()
-        elif choice == 4:
-            print("Returning to the main menu.\n")
-            break
-        else:
-            print("Invalid choice. Please select a valid option (1-4).\n")
-
-def fetch_leave():
-    username = input("Enter the username to search: ")
-
-    try:
-        cursor.execute("SELECT * FROM Leave WHERE Username = ?", (username,))
-
-        rows = cursor.fetchall()
-
-        row_count = 0
-
-        if rows:
-            print(f"\nRecords found for username '{username}':")
-            print(f"\nUsername |  Type  |  Date")
-
-            for row in rows:
-                row_count += 1
-
-                print(f"{row[0]}  , {row[1]} , {row[2]}")
-
-            print(f"\nTotal rows fetched: {row_count}")
-
-    except sqlite3.Error as e:
-        print(f"Error fetching records for '{username}': {e}")
-        print("Failed to fetch records.")
-
-
-def fetch_holi():
-    username = input("Enter the username to search: ")
-
-    try:
-        cursor.execute("SELECT * FROM Holiday WHERE Username = ?", (username,))
-
-        rows = cursor.fetchall()
-
-        row_count = 0
-        if rows:
-            print(f"\nRecords found for username '{username}':")
-            print(f"\nUsername |  Date   |  Time-in  | Time-out")
-
-            for row in rows:
-                row_count += 1
-
-                print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]}")
-
-            print(f"\nTotal rows fetched: {row_count}")
-
-    except sqlite3.Error as e:
-        print(f"Error fetching records for '{username}': {e}")
-        print("Failed to fetch records.")
-
-def fetch_reg():
-    username = input("Enter the username to search: ")
-
-    try:
-        cursor.execute("SELECT * FROM Attendance WHERE Username = ?", (username,))
-
-        rows = cursor.fetchall()
-
-        row_count = 0
-        total_overtime = 0
-
-        if rows:
-            print(f"\nRecords found for username '{username}':")
-            print(f"\nUsername |  Date   |  Time-in  | Time-out | Overtime")
-
-            for row in rows:
-                row_count += 1
-
-                overtime_value = row[4] if row[4] is not None else 0  
-                if isinstance(overtime_value, (int, float)): 
-                    total_overtime += overtime_value
-                else:
-                    print(f"Invalid overtime value found for record {row[0]}: {overtime_value}")
-
-                print(f"{row[0]}  , {row[1]} , {row[2]} , {row[3]} , {overtime_value}")
-
-            print(f"\nTotal rows fetched: {row_count}")
-            print(f"Total Overtime: {total_overtime}")
-
-    except sqlite3.Error as e:
-        print(f"Error fetching records for '{username}': {e}")
-        print("Failed to fetch records.")
 
 def time_in():
     print("You have selected Time-In.")
@@ -222,6 +114,7 @@ def cobol_back():
     subprocess.run(['./Subprog'])
 
 def main_menu():
+    os.system('clear')
     while True:
         # Display menu options
         print("\nATTENDANCE MENU")
@@ -229,14 +122,13 @@ def main_menu():
         print("2 - TIME OUT")
         print("3 - HOLIDAY ATTENDANCE")
         print("4 - LEAVE APPLICATION")
-        print("5 - FETCH RECORDS")
-        print("6 - RETURN TO MAIN MANU")
+        print("5 - RETURN TO MAIN MANU")
 
         # Accept user's choice
         try:
-            choice = int(input("Enter your choice (1-6): "))
+            choice = int(input("Enter your choice (1-5): "))
         except ValueError:
-            print("Invalid input. Please enter a number between 1 and 6.\n")
+            print("Invalid input. Please enter a number between 1 and 5.\n")
             continue
 
         # Evaluate user's choice
@@ -249,11 +141,10 @@ def main_menu():
         elif choice == 4:
             leave_application()
         elif choice == 5:
-            fetch_mainmenu()
-        elif choice == 6:
             cobol_back()
+            break
         else:
-            print("Invalid choice. Please select a valid option (1-6).\n")
+            print("Invalid choice. Please select a valid option (1-5).\n")
 
 # Run the program
 if __name__ == "__main__":
