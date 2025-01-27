@@ -28,6 +28,7 @@
            02 EMPLOYEE-EMAIL PIC X(20).
            02 EMPLOYEE-CONTACT PIC X(12).
            02 EMPLOYEE-ADDRESS PIC X(40).
+           02 SLIP-CODE PIC X(30).
 
        FD PAYSLIP-FILE.
         01 PAYSLIP-RECORD.
@@ -657,7 +658,9 @@
                    DISPLAY "EMPLOYEE CONTACT: " EMPLOYEE-CONTACT
            DISPLAY "==================================================="    
                    DISPLAY "EMPLOYEE ADDRESS: " EMPLOYEE-ADDRESS
-           DISPLAY "==================================================="    
+           DISPLAY "===================================================" 
+                   DISPLAY "PAYSLIP CODE: " SLIP-CODE
+           DISPLAY "==================================================="         
                    DISPLAY "PRESS ENTER TO CONTINUE..." NO ADVANCING
                        ACCEPT OMITTED
            END-READ.

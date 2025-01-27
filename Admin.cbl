@@ -205,6 +205,8 @@
            DISPLAY "==================================================="
            DISPLAY "EMPLOYEE ADDRESS: " EMPLOYEE-ADDRESS
            DISPLAY "==================================================="
+           DISPLAY "PAYSLIP CODE: " SLIP-CODE
+           DISPLAY "===================================================" 
         CLOSE USER-FILE
 
         DISPLAY "[DO YOU WANT TO VIEW ANOTHER RECORD]? (Y/N):" 
@@ -263,7 +265,6 @@
            DISPLAY "|=================================================|"
            DISPLAY 'PRESS ENTER TO CONTINUE...' WITH NO ADVANCING
                   ACCEPT OMITTED
-          
             PERFORM PROCESS-PAYSLIP
             END-EVALUATE
             END-PERFORM
@@ -472,7 +473,6 @@
 
          INSERTCODE.
          CALL "SYSTEM" USING "clear"
-         OPEN I-O USER-FILE
           DISPLAY " "
            DISPLAY "|=================================================|"
            DISPLAY "||||||||||||||||===================||||||||||||||||"     
@@ -481,6 +481,7 @@
            DISPLAY "|=================================================|"
            DISPLAY "[ENTER USERNAME]: " WITH NO ADVANCING
            ACCEPT USER-ID
+              OPEN I-O USER-FILE
        READ USER-FILE KEY IS USER-ID
            INVALID KEY
            DISPLAY "|=================================================|"
