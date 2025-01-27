@@ -9,6 +9,12 @@
             ACCESS MODE IS RANDOM
             RECORD KEY IS USER-ID.
 
+            SELECT PAYSLIP-FILE ASSIGN TO "Payslip.txt"
+                ORGANIZATION IS INDEXED
+                ACCESS MODE IS RANDOM
+                RECORD KEY IS USERNAME.
+
+
        DATA DIVISION.
        FILE SECTION.
        FD USER-FILE.
@@ -23,6 +29,25 @@
            02 EMPLOYEE-EMAIL PIC X(20).
            02 EMPLOYEE-CONTACT PIC X(12).
            02 EMPLOYEE-ADDRESS PIC X(40).
+
+       FD PAYSLIP-FILE.
+        01 PAYSLIP-RECORD.
+            02 USERNAME                 PIC X(30).
+            02 PAYSLIP-PERIOD           PIC X(30).
+            02 EMP-NAME                 PIC X(30).
+            02 BASIC-SALARY             PIC 9(4).
+            02 FD-OVERTIME              PIC Z(6).99.
+            02 FD-NIGHT-DIFF            PIC Z(6).99.
+            02 FD-HOLIDAY               PIC Z(6).99.
+            02 FD-TOTAL-PAY             PIC Z(6).99.
+            02 FD-LATE PIC Z(6).99.
+            02 FD-ABSENT PIC Z(6).99.
+            02 FD-UNDERTIME PIC Z(6).99.
+            02 FD-SSS PIC 999.
+            02 FD-PAGIBIG PIC 999.
+            02 FD-PHILHEALTH PIC 999.
+            02 FD-TOTAL-DEDUCTION PIC Z(6).99.
+            02 FD-NETPAY PIC Z(6).99.
 
        WORKING-STORAGE SECTION.
        01 CHOICE PIC 9.
@@ -39,7 +64,7 @@
         PERFORM UNTIL CHOICE = 5
            DISPLAY "==================================================="
            DISPLAY "|||||||||||===============================|||||||||" 
-           DISPLAY "|||||||||| $ EMPLOYEE RECORD MANAGEMENT $  ||||||||"
+           DISPLAY "|||||||||| $ EMPLOYEE RECOMANAGEMENT $  ||||||||"
            DISPLAY "|||||||||||===============================|||||||||"       
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"     
@@ -75,13 +100,18 @@
                WHEN 4
                    PERFORM PAYSLIP
                WHEN 5
-                   PERFORM MAIN-MENU
+           CALL "SYSTEM" USING BY REFERENCE "python3 Call.py"
                WHEN OTHER 
                    DISPLAY "INVALID OPTION"
                    ACCEPT omitted
+                   PERFORM MAIN-PARA
            END-EVALUATE
            END-PERFORM   
         STOP RUN.
+
+           ATTENDANCE.
+           CALL "SYSTEM" USING BY REFERENCE ATT-REC.
+           STOP RUN.
 
         EDIT-DELETE.
            PERFORM CLEAR-SCREEN
@@ -116,6 +146,7 @@
                WHEN OTHER 
                    DISPLAY "INVALID OPTION"
                    ACCEPT OMITTED
+                   PERFORM EDIT-DELETE
            END-EVALUATE
            END-PERFORM
            STOP RUN. 
@@ -442,9 +473,6 @@
        
            PERFORM MAIN-PARA
            STOP RUN.
-
-        ATTENDANCE.
-           CALL "SYSTEM" USING BY REFERENCE ATT-REC.
 
         PAYSLIP.
            PERFORM CLEAR-SCREEN

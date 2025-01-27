@@ -222,6 +222,7 @@ def main_menu():
             fetch_mainmenu()
         elif choice == 2:
             cobol_back()
+            break
         else:
             print("Invalid choice. Please select a valid option (1-2).\n")
 

@@ -105,6 +105,11 @@
            END-EVALUATE
            END-PERFORM
            STOP RUN.
+
+                  ATTENDANCE.
+           CALL "SYSTEM" USING BY REFERENCE ATT-REC.
+           STOP RUN.
+
       
        USER-REGISTER.
            PERFORM CLEAR-SCREEN
@@ -190,11 +195,6 @@
            ACCEPT USER-ID
 
            READ USER-FILE KEY IS USER-ID
-           IF USER-ID = "admin"
-               PERFORM ADMIN
-           END-IF
-
-           READ USER-FILE KEY IS USER-ID
            INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||=============================================|||"
@@ -210,6 +210,12 @@
                 ELSE
                     CLOSE USER-FILE
                     PERFORM MAIN-MENU
+
+           READ USER-FILE KEY IS USER-ID
+           IF USER-ID = "admin"
+               PERFORM ADMIN
+           END-IF
+
            NOT INVALID KEY
            DISPLAY "==================================================="        
            DISPLAY "[ENTER PASSWORD]: " NO ADVANCING
@@ -286,6 +292,7 @@
                WHEN OTHER 
                    DISPLAY "INVALID OPTION"
                    ACCEPT omitted
+                   PERFORM MAIN-PARA
            END-EVALUATE
            END-PERFORM   
         STOP RUN.
@@ -340,6 +347,7 @@
                WHEN OTHER 
                    DISPLAY "INVALID OPTION"
                    ACCEPT OMITTED
+                   PERFORM EDIT-DELETE
            END-EVALUATE
            END-PERFORM
            STOP RUN. 
@@ -668,9 +676,6 @@
        
            PERFORM MAIN-PARA
            STOP RUN.
-
-        ATTENDANCE.
-           CALL "SYSTEM" USING BY REFERENCE ATT-REC.
 
         PAYSLIP.
            PERFORM CLEAR-SCREEN

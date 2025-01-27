@@ -54,7 +54,6 @@
         01 File-Status PIC XX.
             88 File-OK VALUE "00".
             88 File-End VALUE "10".
-        01 Start-Key PIC X(30) VALUE SPACES.
         01 CHOICE PIC 9.
         01 WS-CHOICE PIC A.
         01 WS-OVERTIME-HOURS PIC 999.
@@ -101,7 +100,11 @@
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||          [5] - BACK TO MENU             |||||"
+           DISPLAY "|||||         [5] - INSERT PAYSLIP CODE       |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||          [6] - BACK TO MENU             |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "[CHOOSE YOUR OPTION]: " WITH NO ADVANCING
@@ -115,6 +118,8 @@
                     PERFORM PROCESS-PAYSLIP
                 WHEN 4
                     PERFORM GENERATESLIP
+                WHEN 5
+                    PERFORM INSERTCODE
                 WHEN 5
                    PERFORM BACK
                 WHEN OTHER
@@ -149,11 +154,6 @@
                 END-READ
             END-PERFORM.
             CLOSE USER-FILE
-           DISPLAY "|=================================================|"
-           DISPLAY "|||||||||||||=========================|||||||||||||"     
-           DISPLAY "||||||||||||   ALL RECORDS DISPLAYED   ||||||||||||"
-           DISPLAY "|||||||||||||=========================|||||||||||||"
-           DISPLAY "|=================================================|"
             PERFORM VIEWING-RECORDS
             STOP RUN.
 
@@ -175,7 +175,7 @@
             ACCEPT WS-CHOICE
             IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
                 CLOSE USER-FILE
-                PERFORM VIEWING-RECORDS
+                PERFORM VIEW-RECORDS
             ELSE
                 CLOSE USER-FILE
                 PERFORM MAIN-MENU
@@ -213,7 +213,7 @@
         NO ADVANCING
         ACCEPT WS-CHOICE
         IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
-            PERFORM VIEWING-RECORDS
+            PERFORM VIEW-RECORDS
         ELSE
             PERFORM MAIN-MENU
         STOP RUN.
@@ -241,11 +241,6 @@
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|||||       [3] - CREATING PAYSLIP RECORD    |||||"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|=================================================|"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||         [4] - INSERT PAYSLIP CODE       |||||"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|||||           [4] - BACK TO MENU            |||||"
            DISPLAY "||||||=======================================||||||"
@@ -260,9 +255,7 @@
             WHEN 3
                 PERFORM PROCESSPAY
             WHEN 4
-                PERFORM INSERTCODE
-            WHEN 5
-                PERFORM MAIN-MENU
+            CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
             WHEN OTHER
            DISPLAY "|=================================================|"
            DISPLAY "|||||||||====================================||||||"     
@@ -478,52 +471,53 @@
          STOP RUN.
 
          INSERTCODE.
-         CALL "SYSTEM" USING "clear"
-          DISPLAY " "
-           DISPLAY "|=================================================|"
-           DISPLAY "||||||||||||||||===================||||||||||||||||"     
-           DISPLAY "|||||||||||||||  INSERTION OF CODE  |||||||||||||||"
-           DISPLAY "||||||||||||||||===================||||||||||||||||"
-           DISPLAY "|=================================================|"
-           DISPLAY "[ENTER USERNAME]: " WITH NO ADVANCING
-           ACCEPT USER-ID
-              OPEN I-O USER-FILE
-       READ USER-FILE KEY IS USER-ID
-           INVALID KEY
-           DISPLAY "|=================================================|"
-           DISPLAY "|||||||||||||=========================|||||||||||||"     
-           DISPLAY "||||||||||| EMPLOYEE RECORD NOT FOUND! ||||||||||||"
-           DISPLAY "|||||||||||||=========================|||||||||||||"
-           DISPLAY "|=================================================|"
-          DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: "
-           WITH NO ADVANCING
-           ACCEPT WS-CHOICE
-              IF WS-CHOICE = "Y" OR "y"
-                    CLOSE USER-FILE
-                    PERFORM INSERTCODE
-                ELSE
-                    CLOSE USER-FILE
-                    PERFORM PROCESS-PAYSLIP
-           NOT INVALID KEY
-           DISPLAY "|=================================================|"     
-           DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
-           ACCEPT SLIP-CODE
-           REWRITE USER-RECORD
-              END-REWRITE.
-              CLOSE USER-FILE
-           DISPLAY "|=================================================|"
-           DISPLAY "SUCCESSFULLY CREATED PAYSLIP!"
-           DISPLAY "|=================================================|"
-            DISPLAY "[DO YOU WANT TO INSERT AGAIN? (Y/N)]: "
-           WITH NO ADVANCING
-           ACCEPT WS-CHOICE
-              IF WS-CHOICE = "Y" OR "y"
-                    CLOSE USER-FILE
-                    PERFORM INSERTCODE
-                ELSE
-                    CLOSE USER-FILE
-                    PERFORM PROCESS-PAYSLIP
-         STOP RUN.
+        CALL "SYSTEM" USING "clear"
+        DISPLAY " "
+        DISPLAY "|=================================================|"
+        DISPLAY "||||||||||||||||===================||||||||||||||||"
+        DISPLAY "|||||||||||||||  INSERTION OF CODE  |||||||||||||||"
+        DISPLAY "||||||||||||||||===================||||||||||||||||"
+        DISPLAY "|=================================================|"
+        DISPLAY "[ENTER USERNAME]: " WITH NO ADVANCING
+        ACCEPT USER-ID
+
+        OPEN I-O USER-FILE
+        READ USER-FILE KEY IS USER-ID
+        INVALID KEY
+        DISPLAY "|=================================================|"
+        DISPLAY "|||||||||||||=========================|||||||||||||"
+        DISPLAY "||||||||||| EMPLOYEE RECORD NOT FOUND! ||||||||||||"
+        DISPLAY "|||||||||||||=========================|||||||||||||"
+        DISPLAY "|=================================================|"
+        DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: " 
+            WITH NO ADVANCING
+            ACCEPT WS-CHOICE
+            IF WS-CHOICE = "Y" OR "y"
+                CLOSE USER-FILE
+                PERFORM INSERTCODE
+            ELSE
+                CLOSE USER-FILE
+            CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+       NOT INVALID KEY
+        DISPLAY "|=================================================|"
+        DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
+        ACCEPT SLIP-CODE
+
+        REWRITE USER-RECORD
+        END-REWRITE.
+        DISPLAY "|=================================================|"
+        DISPLAY "SUCCESSFULLY INSERTED PAYSLIP CODE!"
+        DISPLAY "|=================================================|"
+        DISPLAY "[DO YOU WANT TO INSERT AGAIN? (Y/N)]: "
+         WITH NO ADVANCING
+        ACCEPT WS-CHOICE
+        IF WS-CHOICE = "Y" OR "y"
+            CLOSE USER-FILE
+            PERFORM INSERTCODE
+        ELSE
+            CLOSE USER-FILE
+            CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+       STOP RUN.
 
        GENERATESLIP.
            CALL 'SYSTEM' USING 'clear'
@@ -587,8 +581,8 @@
            DISPLAY "[DO YOU WANT TO VIEW ANOTHER RECORD]? (Y/N):" 
         NO ADVANCING
         ACCEPT WS-CHOICE
-        IF WS-CHOICE = "Y" OR WS-CHOICE = "y"
-            PERFORM GENERATESLIP
-        ELSE
-            PERFORM MAIN-MENU
+            IF WS-CHOICE = "Y"
+                PERFORM GENERATESLIP
+            ELSE
+            CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
         STOP RUN.
