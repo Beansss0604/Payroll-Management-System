@@ -195,6 +195,11 @@
            ACCEPT USER-ID
 
            READ USER-FILE KEY IS USER-ID
+           IF USER-ID = "admin"
+               PERFORM ADMIN
+           END-IF
+
+           READ USER-FILE KEY IS USER-ID
            INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||=============================================|||"
@@ -210,11 +215,6 @@
                 ELSE
                     CLOSE USER-FILE
                     PERFORM MAIN-MENU
-
-           READ USER-FILE KEY IS USER-ID
-           IF USER-ID = "admin"
-               PERFORM ADMIN
-           END-IF
 
            NOT INVALID KEY
            DISPLAY "==================================================="        

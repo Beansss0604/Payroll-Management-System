@@ -78,7 +78,7 @@
         PROCEDURE DIVISION.
         MAIN-MENU.
         CALL 'SYSTEM' USING 'clear'
-        PERFORM UNTIL CHOICE = 4
+        PERFORM UNTIL CHOICE = 6
            DISPLAY "==================================================="
            DISPLAY "||||||||||||||=======================||||||||||||||" 
            DISPLAY "|||||||||||||       ADMINS MENU       |||||||||||||"
@@ -120,7 +120,7 @@
                     PERFORM GENERATESLIP
                 WHEN 5
                     PERFORM INSERTCODE
-                WHEN 5
+                WHEN 6
                    PERFORM BACK
                 WHEN OTHER
            DISPLAY "|=================================================|"
