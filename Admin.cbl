@@ -112,7 +112,7 @@
                 WHEN 2
                     PERFORM VIEW-ATTENDANCE
                 WHEN 3
-                    PERFORM INSERTCODE
+                    PERFORM PROCESS-PAYSLIP
                 WHEN 4
                     PERFORM GENERATESLIP
                 WHEN 5
@@ -243,6 +243,10 @@
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
+           DISPLAY "|||||         [4] - INSERT PAYSLIP CODE       |||||"
+           DISPLAY "||||||=======================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "||||||=======================================||||||"
            DISPLAY "|||||           [4] - BACK TO MENU            |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
@@ -256,6 +260,8 @@
             WHEN 3
                 PERFORM PROCESSPAY
             WHEN 4
+                PERFORM INSERTCODE
+            WHEN 5
                 PERFORM MAIN-MENU
             WHEN OTHER
            DISPLAY "|=================================================|"
@@ -466,7 +472,7 @@
        WITH NO ADVANCING
            ACCEPT WS-CHOICE
               IF WS-CHOICE = "Y" OR "y"
-                    PERFORM INSERTCODE
+                    PERFORM PROCESSPAY
                 ELSE
                     PERFORM PROCESS-PAYSLIP
          STOP RUN.
@@ -499,12 +505,24 @@
                     CLOSE USER-FILE
                     PERFORM PROCESS-PAYSLIP
            NOT INVALID KEY
+           DISPLAY "|=================================================|"     
            DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
            ACCEPT SLIP-CODE
-         REWRITE USER-RECORD
+           REWRITE USER-RECORD
               END-REWRITE.
               CLOSE USER-FILE
-           PERFORM PROCESSPAY
+           DISPLAY "|=================================================|"
+           DISPLAY "SUCCESSFULLY CREATED PAYSLIP!"
+           DISPLAY "|=================================================|"
+            DISPLAY "[DO YOU WANT TO INSERT AGAIN? (Y/N)]: "
+           WITH NO ADVANCING
+           ACCEPT WS-CHOICE
+              IF WS-CHOICE = "Y" OR "y"
+                    CLOSE USER-FILE
+                    PERFORM INSERTCODE
+                ELSE
+                    CLOSE USER-FILE
+                    PERFORM PROCESS-PAYSLIP
          STOP RUN.
 
        GENERATESLIP.
