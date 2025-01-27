@@ -169,6 +169,9 @@
            DISPLAY "==================================================="
            DISPLAY "[ENTER EMPLOYEE ADDRESS]: " WITH NO ADVANCING
             ACCEPT EMPLOYEE-ADDRESS
+           DISPLAY "|=================================================|"
+           DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
+           ACCEPT SLIP-CODE
             
             
             WRITE USER-RECORD

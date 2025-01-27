@@ -78,7 +78,7 @@
         PROCEDURE DIVISION.
         MAIN-MENU.
         CALL 'SYSTEM' USING 'clear'
-        PERFORM UNTIL CHOICE = 6
+        PERFORM UNTIL CHOICE = 5
            DISPLAY "==================================================="
            DISPLAY "||||||||||||||=======================||||||||||||||" 
            DISPLAY "|||||||||||||       ADMINS MENU       |||||||||||||"
@@ -100,11 +100,7 @@
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||         [5] - INSERT PAYSLIP CODE       |||||"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|=================================================|"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||          [6] - BACK TO MENU             |||||"
+           DISPLAY "|||||          [5] - BACK TO MENU             |||||"
            DISPLAY "||||||=======================================||||||"
            DISPLAY "|=================================================|"
            DISPLAY "[CHOOSE YOUR OPTION]: " WITH NO ADVANCING
@@ -119,8 +115,6 @@
                 WHEN 4
                     PERFORM GENERATESLIP
                 WHEN 5
-                    PERFORM INSERTCODE
-                WHEN 6
                    PERFORM BACK
                 WHEN OTHER
            DISPLAY "|=================================================|"
@@ -419,105 +413,72 @@
         STOP RUN.
         
        PROCESSPAY.
-           CALL 'SYSTEM' USING 'clear'
-           OPEN I-O PAYSLIP-FILE
+           CALL "SYSTEM" USING 'clear'
+       OPEN I-O PAYSLIP-FILE
            DISPLAY "|=================================================|"
-           DISPLAY "||||||=======================================||||||"
-           DISPLAY "|||||     [3] - CREATING PAYSLIP RECORD       |||||" 
-           DISPLAY "||||||=======================================||||||"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"     
+           DISPLAY "||||||||||  [3] - CREATING PAYSLIP    |||||||||||||"
+           DISPLAY "||||||||||||||||===================||||||||||||||||"
            DISPLAY "|=================================================|"
-           DISPLAY "[ENTER PAYSLIP CODE:] " WITH NO ADVANCING
+           DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
            ACCEPT USERNAME
+
        READ PAYSLIP-FILE KEY IS USERNAME
            INVALID KEY
-               PERFORM GENEPAYSLIP
+               PERFORM CREATESLIP
+
            NOT INVALID KEY
            DISPLAY "|=================================================|"
            DISPLAY "|||||||||||||=========================|||||||||||||"     
-           DISPLAY "|||||||||||||   PAYSLIP CODE EXIST  ! ||||||||||||"
+           DISPLAY "||||||||||||  PAYSLIP ALREADY EXISTS!  ||||||||||||"
            DISPLAY "|||||||||||||=========================|||||||||||||"
            DISPLAY "|=================================================|"
-          DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: " 
-          WITH NO ADVANCING
+           DISPLAY "[DO YOU WANT TO CONTINUE? (Y/N)]: "WITH NO ADVANCING
            ACCEPT WS-CHOICE
               IF WS-CHOICE = "Y" OR "y"
                     CLOSE PAYSLIP-FILE
                     PERFORM PROCESSPAY
                 ELSE
                     CLOSE PAYSLIP-FILE
-                    PERFORM MAIN-MENU
-         STOP RUN.
-
-         GENEPAYSLIP.
-           DISPLAY "|=================================================|"
-           DISPLAY "ENTER PAYSLIP PERIOD: " WITH NO ADVANCING
-                ACCEPT PAYSLIP-PERIOD
-           DISPLAY "|=================================================|"
-           DISPLAY "ENTER EMPLOYEE NAME: " WITH NO ADVANCING
-                ACCEPT EMP-NAME
-           DISPLAY "|=================================================|"
-           DISPLAY "SUCCESSFULLY CREATED PAYSLIP!"
-           DISPLAY "|=================================================|"          
-           WRITE PAYSLIP-RECORD
-           END-WRITE.
-           CLOSE PAYSLIP-FILE
-                  DISPLAY "[DO YOU WANT TO CREATE AGAIN? (Y/N)]: " 
-       WITH NO ADVANCING
-           ACCEPT WS-CHOICE
-              IF WS-CHOICE = "Y" OR "y"
-                    PERFORM PROCESSPAY
-                ELSE
                     PERFORM PROCESS-PAYSLIP
          STOP RUN.
 
-         INSERTCODE.
-        CALL "SYSTEM" USING "clear"
-        DISPLAY " "
-        DISPLAY "|=================================================|"
-        DISPLAY "||||||||||||||||===================||||||||||||||||"
-        DISPLAY "|||||||||||||||  INSERTION OF CODE  |||||||||||||||"
-        DISPLAY "||||||||||||||||===================||||||||||||||||"
-        DISPLAY "|=================================================|"
-        DISPLAY "[ENTER USERNAME]: " WITH NO ADVANCING
-        ACCEPT USER-ID
+       CREATESLIP.
+       DISPLAY "==================================================="
+           DISPLAY "[ENTER PAYSLIP CODE]: " NO ADVANCING
+            ACCEPT USERNAME
+       DISPLAY "==================================================="
+           DISPLAY "[ENTER PAYSLIP PERIOD]: " NO ADVANCING
+            ACCEPT PAYSLIP-PERIOD
+       DISPLAY "==================================================="
+           DISPLAY "[ENTER EMPLOYEE NAME]: " NO ADVANCING
+            ACCEPT EMP-NAME
 
-        OPEN I-O USER-FILE
-        READ USER-FILE KEY IS USER-ID
+        WRITE PAYSLIP-RECORD
         INVALID KEY
-        DISPLAY "|=================================================|"
-        DISPLAY "|||||||||||||=========================|||||||||||||"
-        DISPLAY "||||||||||| EMPLOYEE RECORD NOT FOUND! ||||||||||||"
-        DISPLAY "|||||||||||||=========================|||||||||||||"
-        DISPLAY "|=================================================|"
-        DISPLAY "[DO YOU WANT TO TRY AGAIN? (Y/N)]: " 
-            WITH NO ADVANCING
-            ACCEPT WS-CHOICE
-            IF WS-CHOICE = "Y" OR "y"
-                CLOSE USER-FILE
-                PERFORM INSERTCODE
-            ELSE
-                CLOSE USER-FILE
-            CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+        CALL "SYSTEM" USING "clear"
+        
+           DISPLAY "|=================================================|"
+           DISPLAY "|||||||||||||=========================|||||||||||||"     
+           DISPLAY "|||||||||||| ERROR: RECORD NOT WRITTEN!||||||||||||"
+           DISPLAY "|||||||||||||=========================|||||||||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "PRESS ANY KEY TO CONTINUE..."
+           CLOSE PAYSLIP-FILE
+           ACCEPT OMITTED
        NOT INVALID KEY
-        DISPLAY "|=================================================|"
-        DISPLAY "[ENTER PAYSLIP CODE]: " WITH NO ADVANCING
-        ACCEPT SLIP-CODE
-
-        REWRITE USER-RECORD
-        END-REWRITE.
-        DISPLAY "|=================================================|"
-        DISPLAY "SUCCESSFULLY INSERTED PAYSLIP CODE!"
-        DISPLAY "|=================================================|"
-        DISPLAY "[DO YOU WANT TO INSERT AGAIN? (Y/N)]: "
-         WITH NO ADVANCING
-        ACCEPT WS-CHOICE
-        IF WS-CHOICE = "Y" OR "y"
-            CLOSE USER-FILE
-            PERFORM INSERTCODE
-        ELSE
-            CLOSE USER-FILE
-            CALL "SYSTEM" USING BY REFERENCE "python3 Admin-call.py"
+       CALL "SYSTEM" USING "clear"
+           DISPLAY "|=================================================|"
+           DISPLAY "|||||||||====================================||||||"     
+           DISPLAY "||||||||    PAYSLIP CREATED SUCCESSFULLY!     |||||"
+           DISPLAY "|||||||||====================================||||||"
+           DISPLAY "|=================================================|"
+           DISPLAY "PRESS ANY KEY TO CONTINUE..."
+           CLOSE PAYSLIP-FILE
+           ACCEPT OMITTED
+           PERFORM PROCESS-PAYSLIP
        STOP RUN.
+
 
        GENERATESLIP.
            CALL 'SYSTEM' USING 'clear'
